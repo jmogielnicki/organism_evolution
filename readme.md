@@ -1,14 +1,10 @@
 # Evolution simulator
 
-## Organisms
+## Individuals
 
-## Reproduction
-### Blueprint (DNA)
-### Inheritance
-
-## Mutations
+## Variation
+### Reproduction
+### Mutations
+### Speciation
 
 ## Selection
-
-## Speciation
-
