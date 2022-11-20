@@ -11,6 +11,3 @@ class Population:
     def generate(self):
         for i in range(self.quantity):
             self.members.append(Organism([random.randrange(0, 100), random.randrange(0, 100)]))
-
-    def render(self):
-        
