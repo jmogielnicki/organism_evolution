@@ -1,4 +1,5 @@
 from organism import Organism
+from helpers import Coordinate
 from PIL import Image
 import random
 
@@ -11,7 +12,10 @@ class Population:
 
     def generate(self):
         for i in range(self.quantity):
-            self.members.append(Organism({"x": random.randrange(0, 100), "y": random.randrange(0, 100)}))
+            x = random.randrange(0, 100)
+            y = random.randrange(0, 100)
+            self.members.append(Organism(Coordinate(x, y)))
 
-    def get_members(self):
-        return self.members
+    def update(self):
+        for each in self.members:
+            each.update()
