@@ -13,12 +13,13 @@ input_to_img_width_ratio = img_width / input_width
 input_to_img_height_ratio = img_height / input_height
 
 file_path = '/Users/johnmogielnicki/code/evolve/media/images/'
-files = glob.glob('{}*'.format(file_path))
-for file in files:
-    os.remove(file)
 
-population = Population(10)
-for i in range(0, 20):
+def clear_images():
+    files = glob.glob('{}*'.format(file_path))
+    for file in files:
+        os.remove(file)
+
+def create_image(population: Population, tick: int):
     img = Image.new('RGB', (img_width, img_height))
     d = ImageDraw.Draw(img)
     for organism in population.members:
@@ -29,6 +30,4 @@ for i in range(0, 20):
             fill="white",
             outline=None,
             width=0)
-    img.save('{}{}.png'.format(file_path, i), 'PNG')
-    population.update()
-img.show()
+    img.save('{}{}.png'.format(file_path, tick), 'PNG')
