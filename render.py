@@ -1,13 +1,16 @@
 from population import Population
-from image import create_image, open_image
+from image import create_image, open_image, clear_images
 from video import make_video
 import sys
 
 # initialize a population
-population = Population(10)
+population = Population(1)
 
 # loop through number of ticks that make up each organisms life
-num_ticks_per_life = 100
+num_ticks_per_life = 1
+
+if "nc" not in sys.argv:
+    clear_images()
 
 for i in range(num_ticks_per_life):
     # render the organisms
@@ -22,3 +25,4 @@ if "v" in sys.argv:
 
 if "o" in sys.argv:
     open_image()
+

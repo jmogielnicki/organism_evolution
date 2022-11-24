@@ -16,7 +16,7 @@ class Population:
             y = random.randint(0, 100)
             self.members.append(Organism(
                 Coordinate(x, y),
-                Direction(0, 1)
+                Direction(-1, 0)
             ))
 
     def update(self):

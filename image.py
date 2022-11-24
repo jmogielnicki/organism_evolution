@@ -5,13 +5,13 @@ import subprocess
 from PIL import Image, ImageDraw
 from population import Population
 
-img_width = 800
-img_height = 800
+img_width = 700
+img_height = 700
 
 input_width = 100
 input_height = 100
 
-input_to_img_ratio = img_width / input_width
+input_to_img_ratio = int(img_width / input_width)
 
 file_path = '/Users/johnmogielnicki/code/evolve/media/images/'
 
