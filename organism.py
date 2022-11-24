@@ -22,7 +22,7 @@ class Organism:
             self.position.y += self.direction.y
 
     def update(self):
-        self.memory.append({'position': self.position, 'direction': self.direction})
+        self.memory.append((self.position, self.direction))
         if random.randint(0, 100) > 20:
             self.turn()
         else:

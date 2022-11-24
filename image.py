@@ -3,7 +3,7 @@ import glob
 import subprocess
 
 from PIL import Image, ImageDraw
-from population import Population
+from generation import Generation
 
 img_width = 900
 img_height = 900
@@ -25,7 +25,7 @@ def clear_images():
     for file in _get_files():
         os.remove(file)
 
-def create_image(population: Population, tick: int):
+def create_image(population: Generation, tick: int):
     img = Image.new('RGB', (img_width, img_height))
     d = ImageDraw.Draw(img)
     for organism in population.members:

@@ -4,7 +4,7 @@ from PIL import Image
 import random
 
 
-class Population:
+class Generation:
     def __init__(self, quantity: int):
         self.quantity = quantity
         self.members = []
