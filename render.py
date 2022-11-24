@@ -4,7 +4,7 @@ from video import make_video
 import sys
 
 # initialize a population
-population = Population(1)
+population = Population(10)
 
 # loop through number of ticks that make up each organisms life
 num_ticks_per_life = 1

@@ -5,8 +5,8 @@ import subprocess
 from PIL import Image, ImageDraw
 from population import Population
 
-img_width = 700
-img_height = 700
+img_width = 900
+img_height = 900
 
 input_width = 100
 input_height = 100

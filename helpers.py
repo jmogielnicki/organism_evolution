@@ -10,5 +10,7 @@ class Direction:
         self.x = x
         self.y = y
 
-    # def get_random_direction():
-    #     x = random.randint(a, b)
+def get_random_direction():
+    x = random.randint(-1, 1)
+    y = 0 if abs(x) != 0 else 1 if random.randint(0, 1) != 0 else -1
+    return [x, y]
