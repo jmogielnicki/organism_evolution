@@ -11,6 +11,8 @@ class Direction:
         self.y = y
 
 def get_random_direction():
-    x = random.randint(-1, 1)
-    y = 0 if abs(x) != 0 else 1 if random.randint(0, 1) != 0 else -1
+    facing_up_down = random.choice([True, False])
+    direction = -1 if random.choice([True, False]) else 1
+    x = direction if not facing_up_down else 0
+    y = direction if facing_up_down else 0
     return [x, y]

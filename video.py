@@ -1,5 +1,6 @@
 import cv2
 import os
+import subprocess
 
 image_folder = 'media/images'
 video_folder = 'media/videos'
@@ -17,7 +18,7 @@ def make_video():
     height, width, layers = frame.shape
 
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    video = cv2.VideoWriter(video_folder + '/' + video_name, fourcc, 30, (width, height))
+    video = cv2.VideoWriter(video_folder + '/' + video_name, fourcc, 20, (width, height))
 
     for image in images:
         video.write(cv2.imread(os.path.join(image_folder, image)))
@@ -25,3 +26,6 @@ def make_video():
     cv2.destroyAllWindows()
 
     video.release()
+
+def open_video():
+    subprocess.call(['open', video_folder + '/' + video_name])

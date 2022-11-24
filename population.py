@@ -14,10 +14,10 @@ class Population:
         for i in range(self.quantity):
             x = random.randint(0, 100)
             y = random.randint(0, 100)
-            directions = get_random_direction()
+            direction_x, direction_y = get_random_direction()
             self.members.append(Organism(
                 Coordinate(x, y),
-                Direction(directions[0], directions[1])
+                Direction(direction_x, direction_y)
             ))
 
     def update(self):
