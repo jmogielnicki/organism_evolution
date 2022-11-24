@@ -23,7 +23,7 @@ class Organism:
 
     def update(self):
         self.memory.append({'position': self.position, 'direction': self.direction})
-        if random.randint(0, 100) > 50:
+        if random.randint(0, 100) > 20:
             self.turn()
         else:
             self.move()

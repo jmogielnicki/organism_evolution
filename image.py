@@ -13,7 +13,7 @@ input_height = 100
 
 input_to_img_ratio = int(img_width / input_width)
 
-file_path = '/Users/johnmogielnicki/code/evolve/media/images/'
+file_path = os.getcwdb().decode("utf-8") + '/media/images/'
 
 img = Image.new('RGB', (img_width, img_height))
 

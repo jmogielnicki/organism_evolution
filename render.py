@@ -26,4 +26,3 @@ if "v" in sys.argv:
 
 if "o" in sys.argv:
     open_image()
-
