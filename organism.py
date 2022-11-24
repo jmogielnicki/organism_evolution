@@ -15,15 +15,18 @@ class Organism:
         self.direction.x = direction if self.direction.x == 0 else 0
         self.direction.y = direction if self.direction.y == 0 else 0
 
+    def move(self):
+        if self.position.x < 99 and self.position.x > 0:
+            self.position.x += self.direction.x
+        if self.position.y < 99 and self.position.y > 0:
+            self.position.y += self.direction.y
+
     def update(self):
         self.memory.append({'position': self.position, 'direction': self.direction})
-        if random.randint(0, 100) > 10:
+        if random.randint(0, 100) > 50:
             self.turn()
         else:
-            if self.position.x < 99 and self.position.x > 0:
-                self.position.x += self.direction.x
-            if self.position.y < 99 and self.position.y > 0:
-                self.position.y += self.direction.y
+            self.move()
 
     def draw(self, d, input_to_img_ratio):
         buffer = int(input_to_img_ratio / 4)
