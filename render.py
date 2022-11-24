@@ -1,6 +1,7 @@
 from population import Population
-from image import create_image
+from image import create_image, open_image
 from video import make_video
+import sys
 
 # initialize a population
 population = Population(10)
@@ -16,4 +17,8 @@ for i in range(num_ticks_per_life):
     population.update()
 
 # create the video
-make_video()
+if "v" in sys.argv:
+    make_video()
+
+if "o" in sys.argv:
+    open_image()
