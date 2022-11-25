@@ -12,8 +12,8 @@ class Generation:
 
     def generate(self):
         for i in range(self.quantity):
-            x = random.randint(0, 100)
-            y = random.randint(0, 100)
+            x = random.randint(0, 99)
+            y = random.randint(0, 99)
             direction_x, direction_y = get_random_direction()
             self.members.append(Organism(
                 Coordinate(x, y),
