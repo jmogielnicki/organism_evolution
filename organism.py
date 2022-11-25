@@ -1,20 +1,18 @@
 from helpers import Coordinate, Direction
 from statistics import mean
+from agent import Agent
 import random
 
-class Organism:
+class Organism(Agent):
     def __init__(
         self,
         position: Coordinate,
         direction: Direction,
         lifespan: int
     ):
-        if not type(position) == Coordinate:
-            raise ValueError('Parameter position must be of type Coordinate.')
-        self.position = position
+        super().__init__(position)
         self.direction = direction
         self.memory = []
-        self.is_alive = True
         self.age = 0
         self.lifespan = lifespan
 

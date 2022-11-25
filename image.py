@@ -4,6 +4,7 @@ import subprocess
 
 from PIL import Image, ImageDraw
 from generation import Generation
+from food import Food
 
 img_width = 900
 img_height = 900
@@ -25,11 +26,13 @@ def clear_images():
     for file in _get_files():
         os.remove(file)
 
-def create_image(population: Generation, tick: int):
+def create_image(population: Generation, food: Food, tick: int):
     img = Image.new('RGB', (img_width, img_height))
     d = ImageDraw.Draw(img)
     for organism in population.members:
         organism.draw(d, input_to_img_ratio)
+    for peice in food:
+        peice.draw(d, input_to_img_ratio)
     img.save('{}{}.png'.format(file_path, tick), 'PNG')
 
 def open_image():
