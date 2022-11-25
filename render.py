@@ -7,20 +7,23 @@ import sys
 generation = Generation(100)
 
 # loop through number of ticks that make up each organisms life
-num_ticks_per_life = 40
+num_ticks_per_generation = 40
 
 if "nc" not in sys.argv:
     clear_images()
 
-for i in range(num_ticks_per_life):
+for i in range(num_ticks_per_generation):
     # render the organisms
-    create_image(generation, i)
+    if "skip_images" not in sys.argv:
+        print('building image {}...'.format(i))
+        create_image(generation, i)
 
     # update the organisms
     generation.update()
 
 # create the video
 if "v" in sys.argv:
+    print('building video...')
     make_video()
     open_video()
 

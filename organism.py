@@ -3,12 +3,20 @@ from statistics import mean
 import random
 
 class Organism:
-    def __init__(self, position: Coordinate, direction: Direction):
+    def __init__(
+        self,
+        position: Coordinate,
+        direction: Direction,
+        lifespan: int
+    ):
         if not type(position) == Coordinate:
             raise ValueError('Parameter position must be of type Coordinate.')
         self.position = position
         self.direction = direction
         self.memory = []
+        self.is_alive = True
+        self.age = 0
+        self.lifespan = lifespan
 
     def turn(self):
         direction = 1 if random.choice([True, False]) else -1
@@ -21,14 +29,24 @@ class Organism:
         if self.position.y < 99 and self.position.y > 0:
             self.position.y += self.direction.y
 
+    def die(self):
+        self.is_alive = False
+
     def update(self):
+        if not self.is_alive:
+            return
         self.memory.append((self.position, self.direction))
-        if random.randint(0, 100) > 20:
+        if random.randint(0, 100) > 80:
             self.turn()
         else:
             self.move()
 
+        if self.age > self.lifespan:
+            self.die()
+        self.age += 1
+
     def draw(self, d, input_to_img_ratio):
+        fill = "white" if self.is_alive else "gray"
         buffer = int(input_to_img_ratio / 4)
         x = self.position.x * input_to_img_ratio
         y = self.position.y * input_to_img_ratio
@@ -38,7 +56,7 @@ class Organism:
         y_middle = mean([y, y2])
         d.rectangle(
             [x, y, x2, y2],
-            fill="white",
+            fill=fill,
             outline=None,
             width=0)
         # TODO - fix this terribly convoluted drawing logic

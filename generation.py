@@ -17,7 +17,8 @@ class Generation:
             direction_x, direction_y = get_random_direction()
             self.members.append(Organism(
                 Coordinate(x, y),
-                Direction(direction_x, direction_y)
+                Direction(direction_x, direction_y),
+                random.randint(1, 40)
             ))
 
     def update(self):
