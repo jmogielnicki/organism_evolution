@@ -26,7 +26,7 @@ def clear_images():
     for file in _get_files():
         os.remove(file)
 
-def create_image(population: Generation, food: Food, tick: int):
+def create_image(population: Generation, food: list[Food], tick: int):
     img = Image.new('RGB', (img_width, img_height))
     d = ImageDraw.Draw(img)
     for organism in population.members:
