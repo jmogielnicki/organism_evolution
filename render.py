@@ -30,7 +30,6 @@ for i in range(num_ticks_per_generation):
             i)
 
     # update the organisms
-    generation.update()
     board.update()
 
 # create the video

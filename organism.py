@@ -30,7 +30,7 @@ class Organism(Agent):
     def die(self):
         self.is_alive = False
 
-    def update(self):
+    def update(self, board):
         if not self.is_alive:
             return
         self.memory.append((self.position, self.direction))

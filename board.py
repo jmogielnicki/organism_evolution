@@ -24,7 +24,7 @@ class Board:
 
     def update(self):
         for player in self.players:
-            player.update()
+            player.update(self)
             self.board[player.position.y, player.position.x] = player
             for peice in self.food:
                 if peice.position == player.position:

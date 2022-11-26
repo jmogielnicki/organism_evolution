@@ -20,7 +20,3 @@ class Generation:
                 Direction(direction_x, direction_y),
                 random.randint(20, 40)
             ))
-
-    def update(self):
-        for each in self.members:
-            each.update()
