@@ -2,6 +2,9 @@ from helpers import Coordinate
 from agent import Agent
 
 class Food(Agent):
+    def __init__(self, position: Coordinate, health_value: int):
+        super().__init__(position)
+        self.health_value = health_value
 
     def draw(self, d, input_to_img_ratio):
         fill = "green" if self.is_alive else "gray"

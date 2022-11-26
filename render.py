@@ -13,7 +13,7 @@ start = time.time()
 
 # initialize organisms and food
 generation = Generation(num_organisms)
-food = [Food(Coordinate(random.randint(0, 99), random.randint(0, 99))) for i in range(num_food)]
+food = [Food(Coordinate(random.randint(0, 99), random.randint(0, 99)), 10) for i in range(num_food)]
 board = Board((100, 100), generation.members, food)
 
 # prepare files

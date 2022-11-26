@@ -1,3 +1,4 @@
+from food import Food
 from helpers import Coordinate, Direction
 from statistics import mean
 from agent import Agent
@@ -14,6 +15,7 @@ class Organism(Agent):
         self.direction = direction
         self.memory = []
         self.age = 0
+        self.original_lifespan = lifespan
         self.lifespan = lifespan
 
     def turn(self):
@@ -42,6 +44,9 @@ class Organism(Agent):
         if self.age > self.lifespan:
             self.die()
         self.age += 1
+
+    def eat(self, food: Food):
+        self.lifespan += food.health_value
 
     def draw(self, d, input_to_img_ratio):
         fill = "white" if self.is_alive else "gray"

@@ -27,8 +27,9 @@ class Board:
             player.update(self)
             self.board[player.position.y, player.position.x] = player
             for peice in self.food:
-                if peice.position == player.position:
+                if peice.position.x == player.position.x and peice.position.y == player.position.y:
                     peice.get_eaten()
+                    player.eat(peice)
         for peice in [each for each in self.food if each.is_alive]:
             self.board[peice.position.y, peice.position.x] = peice
 
