@@ -1,6 +1,6 @@
+from board import Board
 from organism import Organism
 from helpers import Coordinate, Direction, get_random_direction
-from PIL import Image
 import random
 
 
@@ -18,7 +18,7 @@ class Generation:
             self.members.append(Organism(
                 Coordinate(x, y),
                 Direction(direction_x, direction_y),
-                random.randint(1, 40)
+                random.randint(20, 40)
             ))
 
     def update(self):
