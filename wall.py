@@ -1,10 +1,10 @@
-from helpers import Coordinate
+
+
 from agent import Agent
 
-class Food(Agent):
-
+class Wall(Agent):
     def draw(self, d, input_to_img_ratio):
-        fill = "green" if self.is_alive else "gray"
+        fill = "gray"
         x = self.position.x * input_to_img_ratio
         y = self.position.y * input_to_img_ratio
         x2 = x + input_to_img_ratio - 1
@@ -14,6 +14,3 @@ class Food(Agent):
             fill=fill,
             outline=None,
             width=0)
-
-    def get_eaten(self):
-        self.is_alive = False
