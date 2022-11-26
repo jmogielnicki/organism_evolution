@@ -33,7 +33,7 @@ for i in range(num_ticks_per_generation):
     board.update()
 
 # create the video
-if "-v" in sys.argv:
+if "-v" in sys.argv and "-ni" not in sys.argv:
     print('building video...')
     make_video()
     open_video()

@@ -4,6 +4,8 @@ from statistics import mean
 from agent import Agent
 import random
 
+from wall import Wall
+
 class Organism(Agent):
     def __init__(
         self,
@@ -23,7 +25,12 @@ class Organism(Agent):
         self.direction.x = direction if self.direction.x == 0 else 0
         self.direction.y = direction if self.direction.y == 0 else 0
 
-    def move(self):
+    def move(self, board):
+        thing_ahead = board.get_item_at_position(self.position.add(self.direction))
+        print(thing_ahead)
+        if type(thing_ahead) == Wall or type(thing_ahead) == Organism and thing_ahead.is_alive:
+            print("blocked")
+            return
         if self.position.x < 99 and self.position.x > 0:
             self.position.x += self.direction.x
         if self.position.y < 99 and self.position.y > 0:
@@ -39,7 +46,7 @@ class Organism(Agent):
         if random.randint(0, 100) > 80:
             self.turn()
         else:
-            self.move()
+            self.move(board)
 
         if self.age > self.lifespan:
             self.die()
