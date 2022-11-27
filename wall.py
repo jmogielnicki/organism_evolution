@@ -4,7 +4,7 @@ from agent import Agent
 
 class Wall(Agent):
     def draw(self, d, input_to_img_ratio):
-        fill = "gray"
+        fill = "rgb(70, 70, 70)"
         x = self.position.x * input_to_img_ratio
         y = self.position.y * input_to_img_ratio
         x2 = x + input_to_img_ratio - 1

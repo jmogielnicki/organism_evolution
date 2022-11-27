@@ -26,7 +26,8 @@ class Organism(Agent):
         self.direction.y = direction if self.direction.y == 0 else 0
 
     def move(self, board):
-        thing_ahead = board.get_item_at_position(self.position.add(self.direction))
+        new_position = self.position.add(self.direction)
+        thing_ahead = board[new_position.y, new_position.x]
         # print(thing_ahead)
         if type(thing_ahead) == Wall or type(thing_ahead) == Organism and thing_ahead.is_alive:
             # print("blocked")
@@ -43,7 +44,7 @@ class Organism(Agent):
         if not self.is_alive:
             return
         self.memory.append((self.position, self.direction))
-        if random.randint(0, 100) > 80:
+        if random.randint(0, 100) > 100:
             self.turn()
         else:
             self.move(board)

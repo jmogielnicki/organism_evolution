@@ -16,7 +16,7 @@ board = Board((100, 100))
 generation = Generation(num_organisms, board)
 food = [
     Food(
-        Coordinate(random.randint(0, 99), random.randint(0, 99)),
+        board.get_random_open_position(),
         10
     )
     for i in range(num_food)

@@ -35,18 +35,16 @@ class Board:
         return walls
 
     def update(self):
+        starting_board = np.copy(self.board)
         self.board = np.copy(self.starting_board)  # start with a clean board
         for player in self.players:  # add players at their new locations to the board
-            player.update(self)
+            player.update(starting_board)
             self.board[player.position.y, player.position.x] = player
             for peice in self.food:  # if a player is on top of food, eat it
                 if peice.position.x == player.position.x and peice.position.y == player.position.y:
                     player.eat(peice)
         for peice in [x for x in self.food if x.is_alive]:  # place the remaining alive food
             self.board[peice.position.y, peice.position.x] = peice
-
-    def get_item_at_position(self, position: Coordinate):
-        return self.board[position.y, position.x]
 
     def get_random_open_position(self) -> Coordinate:
         # see https://numpy.org/devdocs/user/absolute_beginners.html#indexing-and-slicing
@@ -60,9 +58,9 @@ class Board:
         # occupied_spaces = self.board[self.board != None]  # noqa: E711
         # for item in occupied_spaces:
         #     item.draw(d, input_to_img_ratio)
-        for player in self.players:
-            player.draw(d, input_to_img_ratio)
-        for peice in [each for each in self.food if each.is_alive]:
-            peice.draw(d, input_to_img_ratio)
         for wall in self.walls:
             wall.draw(d, input_to_img_ratio)
+        for peice in [each for each in self.food if each.is_alive]:
+            peice.draw(d, input_to_img_ratio)
+        for player in self.players:
+            player.draw(d, input_to_img_ratio)
