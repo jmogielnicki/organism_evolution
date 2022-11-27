@@ -35,16 +35,14 @@ class Board:
         return walls
 
     def update(self):
-        # TODO - it may be bad for performance to copy the array each update cycle.  Consider refactoring.
-        self.board = np.copy(self.starting_board)
-        for player in self.players:
+        self.board = np.copy(self.starting_board)  # start with a clean board
+        for player in self.players:  # add players at their new locations to the board
             player.update(self)
             self.board[player.position.y, player.position.x] = player
-            for peice in self.food:
+            for peice in self.food:  # if a player is on top of food, eat it
                 if peice.position.x == player.position.x and peice.position.y == player.position.y:
-                    peice.get_eaten()
                     player.eat(peice)
-        for peice in self.food:
+        for peice in [x for x in self.food if x.is_alive]:  # place the remaining alive food
             self.board[peice.position.y, peice.position.x] = peice
 
     def get_item_at_position(self, position: Coordinate):

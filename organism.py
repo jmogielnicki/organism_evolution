@@ -2,9 +2,9 @@ from food import Food
 from helpers import Coordinate, Direction
 from statistics import mean
 from agent import Agent
-import random
-
 from wall import Wall
+from typing import Optional
+import random
 
 class Organism(Agent):
     def __init__(
@@ -54,6 +54,7 @@ class Organism(Agent):
 
     def eat(self, food: Food):
         self.lifespan += food.health_value
+        food.get_eaten()
 
     def draw(self, d, input_to_img_ratio):
         fill = "white" if self.is_alive else "gray"
