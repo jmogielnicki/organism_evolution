@@ -27,14 +27,14 @@ class Organism(Agent):
 
     def move(self, board):
         thing_ahead = board.get_item_at_position(self.position.add(self.direction))
-        print(thing_ahead)
+        # print(thing_ahead)
         if type(thing_ahead) == Wall or type(thing_ahead) == Organism and thing_ahead.is_alive:
-            print("blocked")
+            # print("blocked")
             return
-        if self.position.x < 99 and self.position.x > 0:
-            self.position.x += self.direction.x
-        if self.position.y < 99 and self.position.y > 0:
-            self.position.y += self.direction.y
+        # if self.position.x < 99 and self.position.x > 0:
+        self.position.x += self.direction.x
+        # if self.position.y < 99 and self.position.y > 0:
+        self.position.y += self.direction.y
 
     def die(self):
         self.is_alive = False

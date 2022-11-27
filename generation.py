@@ -5,9 +5,10 @@ import random
 
 
 class Generation:
-    def __init__(self, quantity: int):
+    def __init__(self, quantity: int, board: Board):
         self.quantity = quantity
         self.members = []
+        self.board = board
         self.generate()
 
     def generate(self):
@@ -16,7 +17,7 @@ class Generation:
             y = random.randint(0, 99)
             direction_x, direction_y = get_random_direction()
             self.members.append(Organism(
-                Coordinate(x, y),
+                self.board.get_random_open_position(),
                 Direction(direction_x, direction_y),
                 random.randint(20, 40)
             ))

@@ -12,9 +12,18 @@ import time
 start = time.time()
 
 # initialize organisms and food
-generation = Generation(num_organisms)
-food = [Food(Coordinate(random.randint(0, 99), random.randint(0, 99)), 10) for i in range(num_food)]
-board = Board((100, 100), generation.members, food)
+board = Board((100, 100))
+generation = Generation(num_organisms, board)
+food = [
+    Food(
+        Coordinate(random.randint(0, 99), random.randint(0, 99)),
+        10
+    )
+    for i in range(num_food)
+]
+
+board.place_organisms(generation.members)
+board.place_food(food)
 
 # prepare files
 if "-nc" not in sys.argv:
