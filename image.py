@@ -3,7 +3,6 @@ import glob
 import subprocess
 
 from PIL import Image, ImageDraw, ImageFont
-from generation import Generation
 from food import Food
 from board import Board
 

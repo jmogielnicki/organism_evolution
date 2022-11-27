@@ -11,7 +11,7 @@ class Organism(Agent):
         self,
         position: Coordinate,
         direction: Direction,
-        lifespan: int
+        lifespan: int,
     ):
         super().__init__(position)
         self.direction = direction
@@ -19,6 +19,7 @@ class Organism(Agent):
         self.age = 0
         self.original_lifespan = lifespan
         self.lifespan = lifespan
+        self.chance_to_turn = random.randint(0, 100)
 
     def turn(self):
         direction = 1 if random.choice([True, False]) else -1
@@ -44,7 +45,7 @@ class Organism(Agent):
         if not self.is_alive:
             return
         self.memory.append((self.position, self.direction))
-        if random.randint(0, 100) > 100:
+        if random.randint(0, 100) > self.chance_to_turn:
             self.turn()
         else:
             self.move(board)

@@ -49,7 +49,7 @@ class Board:
     def get_random_open_position(self) -> Coordinate:
         # see https://numpy.org/devdocs/user/absolute_beginners.html#indexing-and-slicing
         open_positions = np.nonzero(self.board == None)  # noqa: E711
-        selection_index = random.randint(0, len(open_positions[0]))
+        selection_index = random.randint(0, len(open_positions[0]) - 1)
         y = open_positions[0][selection_index]
         x = open_positions[1][selection_index]
         return Coordinate(x, y)
