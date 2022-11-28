@@ -45,7 +45,7 @@ class Organism(Agent):
         if not self.is_alive:
             return
         self.memory.append((self.position, self.direction))
-        if random.randint(0, 100) > self.chance_to_turn:
+        if random.randint(0, 100) < self.chance_to_turn:
             self.turn()
         else:
             self.move(board)

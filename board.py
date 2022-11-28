@@ -12,7 +12,8 @@ class Board:
         num_players: int,
         num_food: int,
         lifespan: int,
-        mutation_rate: float
+        mutation_rate: float,
+        food_value: int
     ) -> None:
         self.size = size
         self.board = np.empty(size, dtype=np.object_)
@@ -23,6 +24,7 @@ class Board:
         self.mutation_rate = mutation_rate
         self.players = []
         self.food = []
+        self.food_value = food_value
         self.lifespan = lifespan
         # add walls to the board
         for wall in self.walls:
@@ -44,7 +46,7 @@ class Board:
         self.food = [
             Food(
                 self.get_random_open_position(),
-                20
+                self.food_value
             )
             for i in range(num_food)
         ]
@@ -118,7 +120,7 @@ class Board:
                 Direction(direction_x, direction_y),
                 self.lifespan
             )
-            child.chance_to_turn = int((parent_a.chance_to_turn + parent_b.chance_to_turn) / 2)
+            child.chance_to_turn = random.choice([parent_a.chance_to_turn, parent_b.chance_to_turn])
             if self.mutation_rate > random.uniform(0, 1.0):
                 child.chance_to_turn += random.randint(-10, 10)
             self.players.append(child)
