@@ -1,6 +1,7 @@
 import cv2
 import os
 import subprocess
+import shutil
 import glob
 from consts import fps
 
@@ -8,7 +9,7 @@ image_folder = 'media/images'
 video_folder = 'media/videos'
 video_name = 'video'
 
-video_file_path = os.getcwdb().decode("utf-8") + video_folder
+video_file_path = os.getcwdb().decode("utf-8") + '/' + video_folder + '/'
 
 def _sort_stuff(e):
     numeric_values = "".join([each for each in e if each.isdigit()])
@@ -26,7 +27,7 @@ def make_video(image_directory_name):
     height, width, layers = frame.shape
 
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    video_name = '{}.mp4'.format(image_directory_name)
+    video_name = '{}.mp4'.format('gen' + image_directory_name)
     video = cv2.VideoWriter(video_folder + '/' + video_name, fourcc, fps, (width, height))
 
     for image in images:
@@ -44,12 +45,14 @@ def make_videos():
         make_video(image_directory_name)
 
 def open_video():
-    subprocess.call(['open', video_folder + '/' + video_name])
+    files = _get_files()
+    if len(files) > 0:
+        first_file = files[0]
+        subprocess.call(['open', first_file])
 
 def close_video():
     subprocess.call(['osascript', '-e', 'tell application "Quicktime Player" to quit'])
 
 def clear_video():
-    files = glob.glob('{}*'.format(video_file_path))
     for file in _get_files():
         os.remove(file)

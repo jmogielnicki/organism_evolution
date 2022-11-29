@@ -96,9 +96,12 @@ class Board:
         # import pdb; pdb.set_trace()
         surviving_members = [x for x in self.players if x.is_alive is True]
         num_surviving = len(surviving_members)
-        max_prob_turn = max(member.chance_to_turn for member in surviving_members)
-        min_prob_turn = min(member.chance_to_turn for member in surviving_members)
-        print(min_prob_turn, max_prob_turn, num_surviving)
+        avg_prob_turn = int(sum(member.chance_to_turn for member in surviving_members) / len(surviving_members))
+        avg_prob_move = int(sum(member.chance_to_move for member in surviving_members) / len(surviving_members))
+        avg_prob_wait = int(sum(member.chance_to_wait for member in surviving_members) / len(surviving_members))
+        # max_prob_turn = max(member.chance_to_turn for member in surviving_members)
+        # min_prob_turn = min(member.chance_to_turn for member in surviving_members)
+        print(avg_prob_turn, avg_prob_move, avg_prob_wait)
         f = open("logs/output_logs.txt", "a")
         f.write("\nnum surviving: {}".format(num_surviving))
 
@@ -121,6 +124,10 @@ class Board:
                 self.lifespan
             )
             child.chance_to_turn = random.choice([parent_a.chance_to_turn, parent_b.chance_to_turn])
+            child.chance_to_move = random.choice([parent_a.chance_to_move, parent_b.chance_to_move])
+            child.chance_to_wait = random.choice([parent_a.chance_to_wait, parent_b.chance_to_wait])
             if self.mutation_rate > random.uniform(0, 1.0):
                 child.chance_to_turn += random.randint(-10, 10)
+                child.chance_to_move += random.randint(-10, 10)
+                child.chance_to_wait += random.randint(-10, 10)
             self.players.append(child)
