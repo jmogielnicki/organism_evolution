@@ -6,7 +6,7 @@ from consts import fps
 
 image_folder = 'media/images'
 video_folder = 'media/videos'
-video_name = 'video.mp4'
+video_name = 'video'
 
 video_file_path = os.getcwdb().decode("utf-8") + video_folder
 
@@ -17,24 +17,31 @@ def _sort_stuff(e):
 def _get_files():
     return glob.glob('{}*'.format(video_file_path))
 
-def make_video():
-    clear_video()
-    close_video()
-    images = [img for img in os.listdir(image_folder) if img.endswith(".png")]
+def make_video(image_directory_name):
+    images_directory_path = image_folder + '/' + image_directory_name
+    images = [img for img in os.listdir(images_directory_path) if img.endswith(".png")]
     images.sort(key=_sort_stuff)
 
-    frame = cv2.imread(os.path.join(image_folder, images[0]))
+    frame = cv2.imread(os.path.join(images_directory_path, images[0]))
     height, width, layers = frame.shape
 
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+    video_name = '{}.mp4'.format(image_directory_name)
     video = cv2.VideoWriter(video_folder + '/' + video_name, fourcc, fps, (width, height))
 
     for image in images:
-        video.write(cv2.imread(os.path.join(image_folder, image)))
+        video.write(cv2.imread(os.path.join(images_directory_path, image)))
 
     cv2.destroyAllWindows()
 
     video.release()
+
+def make_videos():
+    clear_video()
+    close_video()
+    image_directories = [img for img in os.listdir(image_folder) if not img.startswith(".")]
+    for image_directory_name in image_directories:
+        make_video(image_directory_name)
 
 def open_video():
     subprocess.call(['open', video_folder + '/' + video_name])

@@ -3,7 +3,7 @@ from helpers import Coordinate, Direction
 from statistics import mean
 from agent import Agent
 from wall import Wall
-from typing import Optional
+from consts import Action
 import random
 
 class Organism(Agent):
@@ -20,6 +20,11 @@ class Organism(Agent):
         self.original_lifespan = lifespan
         self.lifespan = lifespan
         self.chance_to_turn = random.randint(0, 100)
+        self.chance_to_wait = random.randint(0, 100)
+        self.chance_to_move = random.randint(0, 100)
+
+    def wait(self):
+        return
 
     def turn(self):
         direction = 1 if random.choice([True, False]) else -1
@@ -45,10 +50,16 @@ class Organism(Agent):
         if not self.is_alive:
             return
         self.memory.append((self.position, self.direction))
-        if random.randint(0, 100) < self.chance_to_turn:
+        choices = [Action.MOVE, Action.TURN, Action.WAIT]
+        weights = (self.chance_to_move, self.chance_to_turn, self.chance_to_wait)
+        choice = random.choices(choices, weights=weights, k=1)
+
+        if choice == Action.TURN:
             self.turn()
-        else:
+        elif choice == Action.MOVE:
             self.move(board)
+        elif choice == Action.WAIT:
+            self.wait()
 
         if self.age > self.lifespan:
             self.die()

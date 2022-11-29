@@ -24,5 +24,5 @@ def get_random_direction():
     return [x, y]
 
 def get_argument(argument_string: str, default_value: int):
-    value = next((int(x.split("=")[1]) for x in sys.argv if "{}=".format(argument_string) in x), default_value)
+    value = int(next((x.split("=")[1] for x in sys.argv if "{}=".format(argument_string) in x), default_value))
     return value

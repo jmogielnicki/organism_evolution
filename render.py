@@ -2,7 +2,7 @@ from food import Food
 from board import Board
 from helpers import Coordinate
 from image import create_image, open_image, clear_images
-from video import make_video, open_video
+from video import make_videos, open_video
 from consts import (
     num_ticks_per_generation,
     num_organisms,
@@ -43,6 +43,7 @@ for generation_num in range(num_generations):
             print('building image {}...'.format(i))
             create_image(
                 board,
+                generation_num,
                 i)
 
         # update the organisms
@@ -52,7 +53,7 @@ for generation_num in range(num_generations):
 # create the video
 if "-v" in sys.argv and "-ni" not in sys.argv:
     print('building video...')
-    make_video()
+    make_videos()
     open_video()
 
 if "-o" in sys.argv:
