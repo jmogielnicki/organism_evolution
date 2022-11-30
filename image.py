@@ -6,6 +6,7 @@ import subprocess
 from PIL import Image, ImageDraw, ImageFont
 from food import Food
 from board import Board
+from helpers import clear_all_folders_in_directory, get_items_in_directory
 
 img_width = 900
 img_height = 940
@@ -19,19 +20,11 @@ file_path = os.getcwdb().decode("utf-8") + '/media/images/'
 
 img = Image.new('RGB', (img_width, img_height))
 
-def _get_files():
-    return glob.glob('{}*'.format(file_path))
-
 def clear_images():
-    for dir_path in _get_files():
-        try:
-            shutil.rmtree(dir_path)
-        except OSError as e:
-            print("Error: %s : %s" % (dir_path, e.strerror))
-        # os.remove(file)
+    clear_all_folders_in_directory(file_path)
 
 def create_image(board: Board, generation_num: int, tick: int):
-    img = Image.new('RGB', (img_width, img_height))
+    img = Image.new('RGBA', (img_width, img_height))
     d = ImageDraw.Draw(img)
     board.draw(d, input_to_img_ratio)
     draw = ImageDraw.Draw(img)
@@ -44,5 +37,5 @@ def create_image(board: Board, generation_num: int, tick: int):
     img.save(image_path + image_name, 'PNG')
 
 def open_image():
-    files = _get_files()
+    files = get_items_in_directory(file_path)
     subprocess.call(['open', files[0]])

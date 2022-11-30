@@ -4,6 +4,7 @@ import subprocess
 import shutil
 import glob
 from consts import fps
+from helpers import clear_all_files_in_directory, get_items_in_directory
 
 image_folder = 'media/images'
 video_folder = 'media/videos'
@@ -38,21 +39,17 @@ def make_video(image_directory_name):
     video.release()
 
 def make_videos():
-    clear_video()
+    clear_all_files_in_directory(video_file_path)
     close_video()
     image_directories = [img for img in os.listdir(image_folder) if not img.startswith(".")]
     for image_directory_name in image_directories:
         make_video(image_directory_name)
 
 def open_video():
-    files = _get_files()
+    files = get_items_in_directory(video_file_path)
     if len(files) > 0:
         first_file = files[0]
         subprocess.call(['open', first_file])
 
 def close_video():
     subprocess.call(['osascript', '-e', 'tell application "Quicktime Player" to quit'])
-
-def clear_video():
-    for file in _get_files():
-        os.remove(file)

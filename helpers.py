@@ -1,5 +1,9 @@
 import random
 import sys
+import glob
+import shutil
+import os
+import consts
 
 class Direction:
     def __init__(self, x: int, y: int):
@@ -23,6 +27,20 @@ def get_random_direction():
     y = direction if facing_up_down else 0
     return [x, y]
 
-def get_argument(argument_string: str, default_value: int):
-    value = int(next((x.split("=")[1] for x in sys.argv if "{}=".format(argument_string) in x), default_value))
-    return value
+def clear_all_folders_in_directory(filepath):
+    for dir_path in get_items_in_directory(filepath):
+        try:
+            shutil.rmtree(dir_path)
+        except OSError as e:
+            print("Error: %s : %s" % (dir_path, e.strerror))
+
+def clear_all_files_in_directory(filepath):
+    for file in get_items_in_directory(filepath):
+        os.remove(file)
+
+def get_items_in_directory(file_path):
+    return glob.glob('{}*'.format(file_path))
+
+def debug_print(string):
+    if consts.debug > 0:
+        print(string)
