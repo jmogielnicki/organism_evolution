@@ -2,7 +2,7 @@ from food import Food
 from board import Board
 from helpers import clear_all_files_in_directory, debug_print
 from image import create_image, open_image, clear_images
-from video import make_videos, open_video
+from video import make_videos, open_videos
 from consts import (
     num_ticks_per_generation,
     num_organisms,
@@ -11,16 +11,18 @@ from consts import (
     lifespan,
     mutation_rate,
     food_value,
-    logs_file_location
+    logs_file_location,
+    generations_to_render,
+    LAST_GENERATION_KEY
 )
 import sys
 import random
 import time
+import json
+import numpy as np
 
 start = time.time()
-
 mutation_rate = mutation_rate / 1000
-
 
 ############
 # step 1: prepare files
@@ -43,12 +45,17 @@ board = Board(
 )
 
 for generation_num in range(num_generations):
+    should_render = "-ni" not in sys.argv and (
+        str(generation_num) in generations_to_render or (
+            LAST_GENERATION_KEY in generations_to_render and generation_num == num_generations - 1)
+    )
     debug_print('start generation{}'.format(generation_num))
+    if should_render:
+        print('building images for generation {}...'.format(generation_num))
     # loop through the number of ticks that make up a generation and create an image
     for i in range(num_ticks_per_generation):
         # render the organisms
-        if "-ni" not in sys.argv and generation_num == num_generations - 1:
-            print('building image {}...'.format(i))
+        if should_render:
             create_image(
                 board,
                 generation_num,
@@ -64,7 +71,7 @@ for generation_num in range(num_generations):
 if "-v" in sys.argv and "-ni" not in sys.argv:
     print('building video...')
     make_videos()
-    open_video()
+    open_videos()
 
 if "-o" in sys.argv:
     open_image()

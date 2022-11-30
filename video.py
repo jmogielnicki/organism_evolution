@@ -45,11 +45,11 @@ def make_videos():
     for image_directory_name in image_directories:
         make_video(image_directory_name)
 
-def open_video():
+def open_videos():
     files = get_items_in_directory(video_file_path)
-    if len(files) > 0:
-        first_file = files[0]
-        subprocess.call(['open', first_file])
+    for file in files:
+        subprocess.call(['open', file])
+
 
 def close_video():
     subprocess.call(['osascript', '-e', 'tell application "Quicktime Player" to quit'])
