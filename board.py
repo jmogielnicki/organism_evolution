@@ -14,9 +14,11 @@ class Board:
         num_food: int,
         lifespan: int,
         mutation_rate: float,
-        food_value: int
+        food_value: int,
+        num_ticks_per_generation: int
     ) -> None:
         self.size = size
+        self.num_ticks_per_generation = num_ticks_per_generation
         self.board = np.empty(size, dtype=np.object_)
         self.starting_board = np.copy(self.board)
         self.walls = self.generate_walls()
@@ -65,10 +67,10 @@ class Board:
         return walls
 
     def update(self):
-        starting_board = np.copy(self.board)
+        board_snapshot = np.copy(self.board)  # this is used to figure out if a player has something in it's way
         self.board = np.copy(self.starting_board)  # start with a clean board
         for player in self.players:  # add players at their new locations to the board
-            player.update(starting_board)
+            player.update(board_snapshot)
             self.board[player.position.y, player.position.x] = player
             for peice in [x for x in self.food if x.is_alive]:  # if a player is on top of food, eat it
                 if peice.position.x == player.position.x and peice.position.y == player.position.y:
