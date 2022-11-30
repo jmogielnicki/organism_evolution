@@ -1,8 +1,6 @@
 import cv2
 import os
 import subprocess
-import shutil
-import glob
 from consts import fps
 from helpers import clear_all_files_in_directory, get_items_in_directory
 
@@ -15,9 +13,6 @@ video_file_path = os.getcwdb().decode("utf-8") + '/' + video_folder + '/'
 def _sort_stuff(e):
     numeric_values = "".join([each for each in e if each.isdigit()])
     return int(numeric_values)
-
-def _get_files():
-    return glob.glob('{}*'.format(video_file_path))
 
 def make_video(image_directory_name):
     images_directory_path = image_folder + '/' + image_directory_name

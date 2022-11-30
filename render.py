@@ -1,4 +1,3 @@
-from food import Food
 from board import Board
 from helpers import clear_all_files_in_directory, debug_print
 from image import create_image, open_image, clear_images
@@ -16,10 +15,7 @@ from consts import (
     LAST_GENERATION_KEY
 )
 import sys
-import random
 import time
-import json
-import numpy as np
 
 start = time.time()
 

@@ -1,5 +1,4 @@
 import random
-import sys
 import glob
 import shutil
 import os

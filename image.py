@@ -1,10 +1,7 @@
 import os
-import glob
-import shutil
 import subprocess
 
 from PIL import Image, ImageDraw, ImageFont
-from food import Food
 from board import Board
 from helpers import clear_all_folders_in_directory, get_items_in_directory
 
