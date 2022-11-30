@@ -4,6 +4,7 @@ from helpers import Coordinate, Direction, get_random_direction
 from organism import Organism
 from food import Food
 from wall import Wall
+from consts import logs_file_location, Action
 
 class Board:
     def __init__(
@@ -36,20 +37,22 @@ class Board:
     def place_organisms(self, num_players):
         for i in range(num_players):
             direction_x, direction_y = get_random_direction()
-            self.players.append(Organism(
+            new_player = Organism(
                 self.get_random_open_position(),
                 Direction(direction_x, direction_y),
                 self.lifespan
-            ))
+            )
+            self.players.append(new_player)
+            self.board[new_player.position.y, new_player.position.x] = new_player
 
     def place_food(self, num_food: int):
-        self.food = [
-            Food(
+        for i in range(num_food):
+            new_food = Food(
                 self.get_random_open_position(),
                 self.food_value
             )
-            for i in range(num_food)
-        ]
+            self.food.append(new_food)
+            self.board[new_food.position.y, new_food.position.x] = new_food
 
     def generate_walls(self):
         walls = []
@@ -67,7 +70,7 @@ class Board:
         for player in self.players:  # add players at their new locations to the board
             player.update(starting_board)
             self.board[player.position.y, player.position.x] = player
-            for peice in self.food:  # if a player is on top of food, eat it
+            for peice in [x for x in self.food if x.is_alive]:  # if a player is on top of food, eat it
                 if peice.position.x == player.position.x and peice.position.y == player.position.y:
                     player.eat(peice)
         for peice in [x for x in self.food if x.is_alive]:  # place the remaining alive food
@@ -101,13 +104,22 @@ class Board:
         avg_prob_wait = int(sum(member.chance_to_wait for member in surviving_members) / len(surviving_members))
         # max_prob_turn = max(member.chance_to_turn for member in surviving_members)
         # min_prob_turn = min(member.chance_to_turn for member in surviving_members)
-        print(avg_prob_turn, avg_prob_move, avg_prob_wait)
-        f = open("logs/output_logs.txt", "a")
-        f.write("\nnum surviving: {}".format(num_surviving))
+        log_string = ' '.join(
+            ['tmw: ', str(avg_prob_turn), str(avg_prob_move), str(avg_prob_wait), ' num_surv: ', str(num_surviving)])
+        print(log_string)
+        f = open(logs_file_location, "a")
+        f.write("\n{}".format(log_string))
 
     def start_next_generation(self):
         self.log_stats()
+        self.board = np.empty(self.size, dtype=np.object_)
+        self.starting_board = np.copy(self.board)
+        # add walls to the board
+        for wall in self.walls:
+            self.starting_board[wall.position.y, wall.position.x] = wall
+            self.board[wall.position.y, wall.position.x] = wall
         self.breed()
+        self.food = []
         self.place_food(self.num_food)
 
     def breed(self):
@@ -127,7 +139,10 @@ class Board:
             child.chance_to_move = random.choice([parent_a.chance_to_move, parent_b.chance_to_move])
             child.chance_to_wait = random.choice([parent_a.chance_to_wait, parent_b.chance_to_wait])
             if self.mutation_rate > random.uniform(0, 1.0):
-                child.chance_to_turn += random.randint(-10, 10)
-                child.chance_to_move += random.randint(-10, 10)
-                child.chance_to_wait += random.randint(-10, 10)
+                actions = [Action.MOVE, Action.TURN, Action.WAIT]
+                chosen_action = random.choice(actions)
+                child.chance_to_turn += 10 if chosen_action == Action.TURN else 0
+                child.chance_to_move += 10 if chosen_action == Action.MOVE else 0
+                child.chance_to_wait += 10 if chosen_action == Action.WAIT else 0
             self.players.append(child)
+            self.board[child.position.y, child.position.x] = child

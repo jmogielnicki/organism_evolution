@@ -52,8 +52,8 @@ class Organism(Agent):
         self.memory.append((self.position, self.direction))
         choices = [Action.MOVE, Action.TURN, Action.WAIT]
         weights = (self.chance_to_move, self.chance_to_turn, self.chance_to_wait)
-        choice = random.choices(choices, weights=weights, k=1)
-
+        choices = random.choices(choices, weights=weights, k=1)
+        choice = choices[0]
         if choice == Action.TURN:
             self.turn()
         elif choice == Action.MOVE:
