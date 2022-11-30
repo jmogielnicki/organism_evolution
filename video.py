@@ -28,7 +28,7 @@ def make_video(image_directory_name):
     height, width, layers = frame.shape
 
     fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    video_name = '{}.mp4'.format('gen' + image_directory_name)
+    video_name = '{}.mp4'.format('gen_' + image_directory_name)
     video = cv2.VideoWriter(video_folder + '/' + video_name, fourcc, fps, (width, height))
 
     for image in images:
@@ -47,7 +47,7 @@ def make_videos():
 
 def open_videos():
     files = get_items_in_directory(video_file_path)
-    for file in files:
+    for file in sorted(files, key=lambda x: int(x.split('_')[1].replace('.mp4', ''))):
         subprocess.call(['open', file])
 
 

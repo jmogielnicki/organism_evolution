@@ -22,7 +22,6 @@ import json
 import numpy as np
 
 start = time.time()
-mutation_rate = mutation_rate / 1000
 
 ############
 # step 1: prepare files
