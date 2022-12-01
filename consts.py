@@ -1,6 +1,7 @@
 from enum import Enum
 import sys
 
+logs_directory = 'logs/'
 logs_file_location = 'logs/output_logs.txt'
 organism_logs_file_location = 'logs/output_logs_organisms.txt'
 LAST_GENERATION_KEY = 'last'

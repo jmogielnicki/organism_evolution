@@ -5,7 +5,9 @@ from agent import Agent
 from wall import Wall
 from consts import Action, debug
 import random
+import json
 from PIL import Image, ImageDraw, ImageFont
+import numpy as np
 
 class Organism(Agent):
     def __init__(
@@ -35,13 +37,9 @@ class Organism(Agent):
     def move(self, board):
         new_position = self.position.add(self.direction)
         thing_ahead = board[new_position.y, new_position.x]
-        # print(thing_ahead)
         if type(thing_ahead) == Wall or type(thing_ahead) == Organism and thing_ahead.is_alive:
-            # print("blocked")
             return
-        # if self.position.x < 99 and self.position.x > 0:
         self.position.x += self.direction.x
-        # if self.position.y < 99 and self.position.y > 0:
         self.position.y += self.direction.y
 
     def die(self):
@@ -69,6 +67,10 @@ class Organism(Agent):
     def eat(self, food: Food):
         self.lifespan += food.health_value
         food.get_eaten()
+
+    def toJSON(self):
+        return json.dumps(
+            self, default=lambda o: str(o) if isinstance(o, np.int64) else o.__dict__, sort_keys=True)  # type: ignore
 
     def draw(self, d, input_to_img_ratio):
         fill = "white"

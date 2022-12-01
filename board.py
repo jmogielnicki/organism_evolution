@@ -1,10 +1,11 @@
 import random
 import numpy as np
+import json
 from helpers import Coordinate, Direction, get_random_direction
 from organism import Organism
 from food import Food
 from wall import Wall
-from consts import logs_file_location, Action
+from consts import logs_file_location, Action, organism_logs_file_location
 
 class Board:
     def __init__(
@@ -110,6 +111,11 @@ class Board:
         print(log_string)
         f = open(logs_file_location, "a")
         f.write("\n{}".format(log_string))
+        f.close()
+        f2 = open(organism_logs_file_location, "a")
+        for member in surviving_members:
+            f2.write(member.toJSON())
+        f2.close()
 
     def start_next_generation(self):
         self.log_stats()

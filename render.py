@@ -11,6 +11,8 @@ from consts import (
     mutation_rate,
     food_value,
     logs_file_location,
+    organism_logs_file_location,
+    logs_directory,
     generations_to_render,
     LAST_GENERATION_KEY,
     get_option
@@ -24,7 +26,7 @@ start = time.time()
 ############
 if not get_option("nc"):
     clear_images()
-clear_all_files_in_directory(logs_file_location)
+clear_all_files_in_directory(logs_directory)
 
 
 ############
