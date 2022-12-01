@@ -20,9 +20,9 @@ class Organism(Agent):
         self.age = 0
         self.original_lifespan = lifespan
         self.lifespan = lifespan
-        self.chance_to_turn = random.randint(1, 10)
-        self.chance_to_wait = random.randint(1, 10)
-        self.chance_to_move = random.randint(1, 10)
+        self.chance_to_turn = random.random()
+        self.chance_to_wait = random.random()
+        self.chance_to_move = random.random()
 
     def wait(self):
         return
@@ -72,7 +72,8 @@ class Organism(Agent):
 
     def draw(self, d, input_to_img_ratio):
         fill = "white"
-        fill = "rgb({},{},{})".format(self.chance_to_move * 25, self.chance_to_turn * 25, self.chance_to_wait * 25)
+        fill = "rgb({},{},{})".format(
+            int(self.chance_to_move * 250), int(self.chance_to_turn * 250), int(self.chance_to_wait * 250))
         if not self.is_alive:
             fill = "gray"
         buffer = int(input_to_img_ratio / 4)

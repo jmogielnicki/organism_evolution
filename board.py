@@ -101,13 +101,12 @@ class Board:
         # import pdb; pdb.set_trace()
         surviving_members = [x for x in self.players if x.is_alive is True]
         num_surviving = len(surviving_members)
-        avg_prob_turn = int(sum(member.chance_to_turn for member in surviving_members) / len(surviving_members))
-        avg_prob_move = int(sum(member.chance_to_move for member in surviving_members) / len(surviving_members))
-        avg_prob_wait = int(sum(member.chance_to_wait for member in surviving_members) / len(surviving_members))
-        # max_prob_turn = max(member.chance_to_turn for member in surviving_members)
-        # min_prob_turn = min(member.chance_to_turn for member in surviving_members)
+        avg_prob_turn = sum(member.chance_to_turn for member in surviving_members) / len(surviving_members)
+        avg_prob_move = sum(member.chance_to_move for member in surviving_members) / len(surviving_members)
+        avg_prob_wait = sum(member.chance_to_wait for member in surviving_members) / len(surviving_members)
         log_string = ' '.join(
-            ['tmw: ', str(avg_prob_turn), str(avg_prob_move), str(avg_prob_wait), ' num_surv: ', str(num_surviving)])
+            ['tmw: ', str(round(avg_prob_turn, 2)), str(round(avg_prob_move, 2)), str(round(avg_prob_wait, 2)),
+                ' num_surv: ', str(num_surviving)])
         print(log_string)
         f = open(logs_file_location, "a")
         f.write("\n{}".format(log_string))
@@ -143,8 +142,8 @@ class Board:
             if self.mutation_rate > random.uniform(0, 1.0):
                 actions = [Action.MOVE, Action.TURN, Action.WAIT]
                 chosen_action = random.choice(actions)
-                child.chance_to_turn += 10 if chosen_action == Action.TURN else 0
-                child.chance_to_move += 10 if chosen_action == Action.MOVE else 0
-                child.chance_to_wait += 10 if chosen_action == Action.WAIT else 0
+                child.chance_to_turn = min(child.chance_to_turn + 0.5, 1) if chosen_action == Action.TURN else 0
+                child.chance_to_move = min(child.chance_to_move + 0.5, 1) if chosen_action == Action.MOVE else 0
+                child.chance_to_wait = min(child.chance_to_wait + 0.5, 1) if chosen_action == Action.WAIT else 0
             self.players.append(child)
             self.board[child.position.y, child.position.x] = child
