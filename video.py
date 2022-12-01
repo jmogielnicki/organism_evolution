@@ -22,7 +22,7 @@ def make_video(image_directory_name):
     frame = cv2.imread(os.path.join(images_directory_path, images[0]))
     height, width, layers = frame.shape
 
-    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     video_name = '{}.mp4'.format('gen_' + image_directory_name)
     video = cv2.VideoWriter(video_folder + '/' + video_name, fourcc, fps, (width, height))
 

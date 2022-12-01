@@ -12,9 +12,9 @@ from consts import (
     food_value,
     logs_file_location,
     generations_to_render,
-    LAST_GENERATION_KEY
+    LAST_GENERATION_KEY,
+    get_option
 )
-import sys
 import time
 
 start = time.time()
@@ -22,7 +22,7 @@ start = time.time()
 ############
 # step 1: prepare files
 ############
-if "-nc" not in sys.argv:
+if not get_option("nc"):
     clear_images()
 clear_all_files_in_directory(logs_file_location)
 
@@ -36,11 +36,12 @@ board = Board(
     num_food,
     lifespan,
     mutation_rate,
-    food_value
+    food_value,
+    num_generations
 )
 
 for generation_num in range(num_generations):
-    should_render = "-ni" not in sys.argv and (
+    should_render = not get_option("ni") and (
         str(generation_num) in generations_to_render or (
             LAST_GENERATION_KEY in generations_to_render and generation_num == num_generations - 1)
     )
@@ -63,12 +64,12 @@ for generation_num in range(num_generations):
 ############
 # step 3: create video
 ############
-if "-v" in sys.argv and "-ni" not in sys.argv:
+if get_option("v") and not get_option("ni"):
     print('building video...')
     make_videos()
     open_videos()
 
-if "-o" in sys.argv:
+if get_option("o"):
     open_image()
 
 end = time.time()

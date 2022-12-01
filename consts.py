@@ -2,6 +2,7 @@ from enum import Enum
 import sys
 
 logs_file_location = 'logs/output_logs.txt'
+organism_logs_file_location = 'logs/output_logs_organisms.txt'
 LAST_GENERATION_KEY = 'last'
 
 def get_argument_int(argument_string: str, default_value: int):
@@ -17,6 +18,9 @@ def get_argument_list(argument_string: str, default_value: str):
     values = input.split(",")
     return values
 
+def get_option(key):
+    return "-" + key in sys.argv
+
 num_ticks_per_generation = get_argument_int('t', 100)
 num_organisms = get_argument_int('o', 100)
 num_food = get_argument_int('f', 20)
@@ -25,7 +29,7 @@ fps = get_argument_int('fps', 30)
 num_generations = get_argument_int('g', 10)
 mutation_rate = get_argument_float('mr', 0.01)
 food_value = get_argument_int('fv', 10)
-debug = get_argument_int('db', 0)
+debug = get_option('db')
 generations_to_render = get_argument_list('rg', LAST_GENERATION_KEY)
 
 

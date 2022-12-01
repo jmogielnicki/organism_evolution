@@ -3,8 +3,9 @@ from helpers import Coordinate, Direction
 from statistics import mean
 from agent import Agent
 from wall import Wall
-from consts import Action
+from consts import Action, debug
 import random
+from PIL import Image, ImageDraw, ImageFont
 
 class Organism(Agent):
     def __init__(
@@ -19,9 +20,9 @@ class Organism(Agent):
         self.age = 0
         self.original_lifespan = lifespan
         self.lifespan = lifespan
-        self.chance_to_turn = random.randint(0, 10)
-        self.chance_to_wait = random.randint(0, 10)
-        self.chance_to_move = random.randint(0, 10)
+        self.chance_to_turn = random.randint(1, 10)
+        self.chance_to_wait = random.randint(1, 10)
+        self.chance_to_move = random.randint(1, 10)
 
     def wait(self):
         return
@@ -103,3 +104,7 @@ class Organism(Agent):
             fill="black",
             outline=None,
             width=0)
+        if debug:
+            stats = ', '.join([str(self.chance_to_move), str(self.chance_to_turn), str(self.chance_to_wait)])
+            font = ImageFont.truetype("Helvetica.ttc", 14)
+            d.text((x, y + 10), 'mtw: {}'.format(stats), font=font, stroke_width=0)
