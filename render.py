@@ -18,6 +18,7 @@ from consts import (
     get_option
 )
 import time
+import json
 
 start = time.time()
 
@@ -76,3 +77,14 @@ if get_option("o"):
 
 end = time.time()
 print('time elapsed: ', end - start)
+
+# f2 = open(organism_logs_file_location, "a")
+# f2.write(board.toJSON(board.log_data))
+# f2.close()
+
+with open(organism_logs_file_location, "a") as file:
+    file.write(board.toJSON(board.log_data))
+    file.close()
+
+with open(organism_logs_file_location) as file:
+    import pdb; pdb.set_trace()

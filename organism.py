@@ -48,7 +48,7 @@ class Organism(Agent):
     def update(self, board):
         if not self.is_alive:
             return
-        self.memory.append((self.position, self.direction))
+        self.memory.append({'pos': self.position, 'dir': self.direction, 'is_alive': self.is_alive})
         choices = [Action.MOVE, Action.TURN, Action.WAIT]
         weights = (self.chance_to_move, self.chance_to_turn, self.chance_to_wait)
         choices = random.choices(choices, weights=weights, k=1)
@@ -67,10 +67,6 @@ class Organism(Agent):
     def eat(self, food: Food):
         self.lifespan += food.health_value
         food.get_eaten()
-
-    def toJSON(self):
-        return json.dumps(
-            self, default=lambda o: str(o) if isinstance(o, np.int64) else o.__dict__, sort_keys=True)  # type: ignore
 
     def draw(self, d, input_to_img_ratio):
         fill = "white"

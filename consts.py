@@ -16,7 +16,7 @@ def get_argument_float(argument_string: str, default_value: float):
 
 def get_argument_list(argument_string: str, default_value: str):
     input = next((x.split("=")[1] for x in sys.argv if "{}=".format(argument_string) in x), default_value)
-    values = input.split(",")
+    values = [x.strip for x in input.split(",")]
     return values
 
 def get_option(key):

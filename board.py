@@ -16,7 +16,7 @@ class Board:
         lifespan: int,
         mutation_rate: float,
         food_value: int,
-        num_ticks_per_generation: int
+        num_ticks_per_generation: int,
     ) -> None:
         self.size = size
         self.num_ticks_per_generation = num_ticks_per_generation
@@ -36,6 +36,8 @@ class Board:
             self.board[wall.position.y, wall.position.x] = wall
         self.place_organisms(num_players)
         self.place_food(num_food)
+        self.generation_number = 0
+        self.log_data = []
 
     def place_organisms(self, num_players):
         for i in range(num_players):
@@ -98,8 +100,13 @@ class Board:
         for player in self.players:
             player.draw(d, input_to_img_ratio)
 
+    def toJSON(self, obj):
+        return json.dumps(
+            obj,
+            default=lambda o: str(o) if isinstance(o, np.int64) or isinstance(o, np.ndarray) else o.__dict__,  # type: ignore
+            sort_keys=True)
+
     def log_stats(self):
-        # import pdb; pdb.set_trace()
         surviving_members = [x for x in self.players if x.is_alive is True]
         num_surviving = len(surviving_members)
         avg_prob_turn = sum(member.chance_to_turn for member in surviving_members) / len(surviving_members)
@@ -112,9 +119,15 @@ class Board:
         f = open(logs_file_location, "a")
         f.write("\n{}".format(log_string))
         f.close()
+        stuff_to_log = {
+            'gen': self.generation_number,
+            'players': self.players,
+            'food': self.food,
+            'walls': self.walls
+        }
+        self.log_data.append(stuff_to_log)
         f2 = open(organism_logs_file_location, "a")
-        for member in surviving_members:
-            f2.write(member.toJSON())
+        f2.write("\n{}".format(self.toJSON(stuff_to_log)))
         f2.close()
 
     def start_next_generation(self):
@@ -128,6 +141,7 @@ class Board:
         self.breed()
         self.food = []
         self.place_food(self.num_food)
+        self.generation_number += 1
 
     def breed(self):
         surviving_members = [x for x in self.players if x.is_alive is True]
