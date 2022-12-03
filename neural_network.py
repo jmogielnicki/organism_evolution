@@ -1,33 +1,20 @@
 import numpy as np
 from neuron import Neuron
+import numpy.typing as npt
 
 
 class NeuralNetwork:
     def __init__(self, layers):
         self.layers = layers
-        self.neurons = []
-        # Initialize the weights randomly
-        for i in range(1, len(layers)):
-            layer_neurons = []
-            for j in range(layers[i]):
-                # Create a neuron with random weights and bias
-                weights = np.random.rand(layers[i - 1])
-                bias = np.random.rand(1)
-                neuron = Neuron(weights, bias)
-                layer_neurons.append(neuron)
-            self.neurons.append(layer_neurons)
 
-    def feedforward(self, inputs):
-        # Feed the inputs through the neural network
-        outputs = inputs
-        for i in range(len(self.neurons)):
-            layer_outputs = []
-            for neuron in self.neurons[i]:
-                # Compute the output of the neuron
-                output = neuron.activate(outputs)
-                layer_outputs.append(output)
-            outputs = layer_outputs
-        return outputs
+    def forward_propagate(self, inputs):
+        # Propagate the inputs through the network layer by layer
+        for layer in self.layers:
+            new_inputs = []
+            for neuron in layer:
+                new_inputs.append(neuron.activate(inputs))
+            inputs = new_inputs
+        return inputs
 
     # def visualize(self):
     #     plt.figure(figsize=(10, 5))
