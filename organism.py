@@ -5,8 +5,9 @@ from agent import Agent
 from wall import Wall
 from consts import Action, debug
 import random
-import json
-from PIL import Image, ImageDraw, ImageFont
+from PIL import ImageFont
+from neural_network import NeuralNetwork, Neuron
+import random
 import numpy as np
 
 class Organism(Agent):
@@ -25,6 +26,29 @@ class Organism(Agent):
         self.chance_to_turn = random.random()
         self.chance_to_wait = random.random()
         self.chance_to_move = random.random()
+        self.brain = self.build_brain()
+        self.use_brain = False
+        self.current_weights = [self.chance_to_move, self.chance_to_turn, self.chance_to_wait]
+
+    def build_brain(self):
+        # Set the number of input, hidden, and output nodes
+        num_inputs = 1
+        num_hidden = 3
+        num_outputs = 3
+
+        # Create the hidden layer neurons
+        hidden_layers = [
+            # [Neuron([0, 0], 0) for _ in range(num_hidden)]
+        ]
+
+        # Create the output layer neurons with output layer weights and biases with value between -0.5 to 0.5
+        output_layer = [
+            Neuron(
+                [random.uniform(-0.5, 0.5) for _ in range(num_inputs)],
+                random.uniform(-0.5, 0.5)) for _ in range(num_outputs)]
+
+        # Create the NeuralNetwork object
+        return NeuralNetwork(hidden_layers, output_layer)
 
     def wait(self):
         return
@@ -34,9 +58,12 @@ class Organism(Agent):
         self.direction.x = direction if self.direction.x == 0 else 0
         self.direction.y = direction if self.direction.y == 0 else 0
 
-    def move(self, board):
+    def get_thing_ahead(self, board) -> Agent:
         new_position = self.position.add(self.direction)
-        thing_ahead = board[new_position.y, new_position.x]
+        return board[new_position.y, new_position.x]
+
+    def move(self, board):
+        thing_ahead = self.get_thing_ahead(board)
         if type(thing_ahead) == Wall or type(thing_ahead) == Organism and thing_ahead.is_alive:
             return
         self.position.x += self.direction.x
@@ -45,12 +72,28 @@ class Organism(Agent):
     def die(self):
         self.is_alive = False
 
+    def get_brain_inputs(self, board):
+        input_value = 0
+        thing_ahead = self.get_thing_ahead(board)
+        if type(thing_ahead) == Wall:
+            input_value = -0.5
+        elif type(thing_ahead) == Food and thing_ahead.is_alive:
+            input_value = 0.5
+        return [input_value]
+
     def update(self, board):
         if not self.is_alive:
             return
         self.memory.append({'pos': self.position, 'dir': self.direction, 'is_alive': self.is_alive})
+
         choices = [Action.MOVE, Action.TURN, Action.WAIT]
-        weights = (self.chance_to_move, self.chance_to_turn, self.chance_to_wait)
+        weights = [self.chance_to_move,
+                   self.chance_to_turn, self.chance_to_wait]
+        if self.use_brain:
+            weights = self.brain.forward_propagate(inputs=self.get_brain_inputs(
+                board))
+            # print(weights)
+        self.current_weights = weights
         choices = random.choices(choices, weights=weights, k=1)
         choice = choices[0]
         if choice == Action.TURN:
@@ -64,14 +107,16 @@ class Organism(Agent):
             self.die()
         self.age += 1
 
+    def get_fitness(self):
+        return self.lifespan
+
     def eat(self, food: Food):
         self.lifespan += food.health_value
         food.get_eaten()
 
     def draw(self, d, input_to_img_ratio):
         fill = "white"
-        fill = "rgb({},{},{})".format(
-            int(self.chance_to_move * 250), int(self.chance_to_turn * 250), int(self.chance_to_wait * 250))
+        fill = "rgb({})".format(", ".join([str(int(x * 250)) for x in self.current_weights]))
         if not self.is_alive:
             fill = "gray"
         buffer = int(input_to_img_ratio / 4)

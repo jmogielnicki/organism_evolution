@@ -144,9 +144,12 @@ class Board:
         self.generation_number += 1
 
     def breed(self):
+        # TODO: change this so that fitness determines your chances of breeding instead of survival
+        use_brain = self.players[0].use_brain
         surviving_members = [x for x in self.players if x.is_alive is True]
         self.players = []
         random.shuffle(surviving_members)
+
         for i in range(self.num_players):
             parent_a = random.choice(surviving_members)
             parent_b = random.choice(surviving_members)
@@ -156,14 +159,24 @@ class Board:
                 Direction(direction_x, direction_y),
                 self.lifespan
             )
-            child.chance_to_turn = random.choice([parent_a.chance_to_turn, parent_b.chance_to_turn])
-            child.chance_to_move = random.choice([parent_a.chance_to_move, parent_b.chance_to_move])
-            child.chance_to_wait = random.choice([parent_a.chance_to_wait, parent_b.chance_to_wait])
-            if self.mutation_rate > random.uniform(0, 1.0):
-                actions = [Action.MOVE, Action.TURN, Action.WAIT]
-                chosen_action = random.choice(actions)
-                child.chance_to_turn = min(child.chance_to_turn + 0.5, 1) if chosen_action == Action.TURN else 0
-                child.chance_to_move = min(child.chance_to_move + 0.5, 1) if chosen_action == Action.MOVE else 0
-                child.chance_to_wait = min(child.chance_to_wait + 0.5, 1) if chosen_action == Action.WAIT else 0
+
+            if use_brain:
+                # create the new hybrid output layer with weights and biases
+                number_neurons = len(parent_a.brain.output_layer)
+                child.brain.output_layer = [
+                    random.choice([
+                        parent_a.brain.output_layer[i],
+                        parent_b.brain.output_layer[i]]) for i in range(number_neurons)]
+            else:
+                child.chance_to_turn = random.choice([parent_a.chance_to_turn, parent_b.chance_to_turn])
+                child.chance_to_move = random.choice([parent_a.chance_to_move, parent_b.chance_to_move])
+                child.chance_to_wait = random.choice([parent_a.chance_to_wait, parent_b.chance_to_wait])
+                if self.mutation_rate > random.uniform(0, 1.0):
+                    actions = [Action.MOVE, Action.TURN, Action.WAIT]
+                    chosen_action = random.choice(actions)
+                    child.chance_to_turn = min(child.chance_to_turn + 0.5, 1) if chosen_action == Action.TURN else 0
+                    child.chance_to_move = min(child.chance_to_move + 0.5, 1) if chosen_action == Action.MOVE else 0
+                    child.chance_to_wait = min(child.chance_to_wait + 0.5, 1) if chosen_action == Action.WAIT else 0
+
             self.players.append(child)
             self.board[child.position.y, child.position.x] = child
