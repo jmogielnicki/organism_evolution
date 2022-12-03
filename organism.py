@@ -27,7 +27,7 @@ class Organism(Agent):
         self.chance_to_wait = random.random()
         self.chance_to_move = random.random()
         self.brain = self.build_brain()
-        self.use_brain = False
+        self.use_brain = True
         self.current_weights = [self.chance_to_move, self.chance_to_turn, self.chance_to_wait]
 
     def build_brain(self):
@@ -44,8 +44,8 @@ class Organism(Agent):
         # Create the output layer neurons with output layer weights and biases with value between -0.5 to 0.5
         output_layer = [
             Neuron(
-                [random.uniform(-0.5, 0.5) for _ in range(num_inputs)],
-                random.uniform(-0.5, 0.5)) for _ in range(num_outputs)]
+                [random.uniform(-100, 100) for _ in range(num_inputs)],
+                random.uniform(-100, 100)) for _ in range(num_outputs)]
 
         # Create the NeuralNetwork object
         return NeuralNetwork(hidden_layers, output_layer)
@@ -75,7 +75,7 @@ class Organism(Agent):
     def get_brain_inputs(self, board):
         input_value = 0
         thing_ahead = self.get_thing_ahead(board)
-        if type(thing_ahead) == Wall:
+        if type(thing_ahead) == Wall or type(thing_ahead) == Organism and thing_ahead.is_alive:
             input_value = -0.5
         elif type(thing_ahead) == Food and thing_ahead.is_alive:
             input_value = 0.5
