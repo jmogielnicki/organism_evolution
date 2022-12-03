@@ -86,5 +86,6 @@ with open(organism_logs_file_location, "a") as file:
     file.write(board.toJSON(board.log_data))
     file.close()
 
+board.players[0].brain.visualize()
 # with open(organism_logs_file_location) as file:
 #     import pdb; pdb.set_trace()

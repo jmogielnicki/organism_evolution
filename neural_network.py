@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 class Neuron:
     def __init__(self, weights, bias):
@@ -38,24 +40,43 @@ class NeuralNetwork:
 
         return outputs
 
-    # def visualize(self):
-    #     plt.figure(figsize=(10, 5))
-    #     plt.xlim(-0.2, 1.2)
-    #     plt.ylim(-0.2, 1.2)
+    def visualize(self):
+        # Compute the total number of layers in the network, including the input but excluding the output
+        num_layers = len(self.hidden_layers) + 1
 
-    #     # Plot the input layer
-    #     plt.scatter(inputs[:, 0], inputs[:, 1], c=targets)
+        # Compute the maximum number of nodes in any layer of the network
+        max_nodes = max([len(layer) for layer in self.hidden_layers]
+                        ) if self.hidden_layers else 0
+        max_nodes = max(max_nodes, len(self.output_layer))
 
-    #     # Draw lines between the input and hidden layers
-    #     for i in range(len(self.neurons[0])):
-    #         neuron = self.neurons[0][i]
-    #         w = neuron.weights
-    #         plt.plot([0, w[1]], [0, w[2]], 'k')
+        # Compute the x and y coordinates for each node in the network
+        node_coords = []
+        for i in range(num_layers):
+            # Compute the y coordinate for each node in the current layer
+            y = np.linspace(0, 1, max_nodes)
+            # Compute the x coordinate for each node in the current layer
+            x = np.ones(max_nodes) * i
+            # Add the node coordinates for the current layer to the list
+            node_coords.append(np.column_stack((x, y)))
 
-    #     # Draw lines between the hidden and output layers
-    #     for i in range(len(self.neurons[1])):
-    #         neuron = self.neurons[1][i]
-    #         w = neuron.weights
-    #         plt.plot([w[0], w[1]], [w[0], w[2]], 'k')
+        # Create a figure and axes
+        fig, ax = plt.subplots()
 
-    #     plt.show()
+        # Plot the nodes
+        for i, layer_coords in enumerate(node_coords):
+            ax.scatter(layer_coords[:, 0], layer_coords[:, 1])
+            ax.text(layer_coords[:, 0].mean(),
+                    layer_coords[:, 1].mean(), f'layer {i}')
+
+        # Plot the weights
+        for i, layer in enumerate(self.hidden_layers):
+            for j, neuron in enumerate(layer):
+                for k, weight in enumerate(neuron.weights):
+                    ax.plot([i, i + 1], [j, k], 'k-', linewidth=abs(weight / 100))
+
+        for j, neuron in enumerate(self.output_layer):
+            for k, weight in enumerate(neuron.weights):
+                ax.plot([num_layers - 1, num_layers],
+                        [j, k], 'k-', linewidth=abs(weight / 100))
+
+        plt.show()
