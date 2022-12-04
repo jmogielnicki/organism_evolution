@@ -5,7 +5,7 @@ from helpers import Coordinate, Direction, get_random_direction
 from organism import Organism
 from food import Food
 from wall import Wall
-from consts import logs_file_location, Action, organism_logs_file_location
+from consts import logs_file_location, Action, organism_logs_file_location, use_brain
 
 class Board:
     def __init__(
@@ -45,7 +45,8 @@ class Board:
             new_player = Organism(
                 self.get_random_open_position(),
                 Direction(direction_x, direction_y),
-                self.lifespan
+                self.lifespan,
+                use_brain=use_brain
             )
             self.players.append(new_player)
             self.board[new_player.position.y, new_player.position.x] = new_player
@@ -157,16 +158,20 @@ class Board:
             child = Organism(
                 self.get_random_open_position(),
                 Direction(direction_x, direction_y),
-                self.lifespan
+                self.lifespan,
+                use_brain=use_brain
             )
 
             if use_brain:
                 # create the new hybrid output layer with weights and biases
-                number_neurons = len(parent_a.brain.output_layer)
-                child.brain.output_layer = [
-                    random.choice([
-                        parent_a.brain.output_layer[i],
-                        parent_b.brain.output_layer[i]]) for i in range(number_neurons)]
+                number_neurons = len(child.brain.output_layer)
+                for i in range(number_neurons):
+                    if self.mutation_rate > random.uniform(0, 1.0):
+                        continue
+                    else:
+                        child.brain.output_layer[i] = random.choice([
+                            parent_a.brain.output_layer[i],
+                            parent_b.brain.output_layer[i]])
             else:
                 child.chance_to_turn = random.choice([parent_a.chance_to_turn, parent_b.chance_to_turn])
                 child.chance_to_move = random.choice([parent_a.chance_to_move, parent_b.chance_to_move])

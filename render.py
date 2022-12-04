@@ -53,15 +53,14 @@ for generation_num in range(num_generations):
         print('building images for generation {}...'.format(generation_num))
     # loop through the number of ticks that make up a generation and create an image
     for i in range(num_ticks_per_generation):
+        # update the organisms
+        board.update()
         # render the organisms
         if should_render:
             create_image(
                 board,
                 generation_num,
                 i)
-
-        # update the organisms
-        board.update()
     board.start_next_generation()
 
 ############
@@ -86,6 +85,6 @@ with open(organism_logs_file_location, "a") as file:
     file.write(board.toJSON(board.log_data))
     file.close()
 
-board.players[0].brain.visualize()
+# board.players[0].brain.visualize()
 # with open(organism_logs_file_location) as file:
 #     import pdb; pdb.set_trace()

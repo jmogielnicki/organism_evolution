@@ -41,5 +41,5 @@ def get_items_in_directory(file_path):
     return glob.glob('{}*'.format(file_path))
 
 def debug_print(string):
-    if consts.debug > 0:
+    if consts.debug:
         print(string)

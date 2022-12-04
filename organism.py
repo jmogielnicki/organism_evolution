@@ -7,8 +7,8 @@ from consts import Action, debug
 import random
 from PIL import ImageFont
 from neural_network import NeuralNetwork, Neuron
-import random
 import numpy as np
+import copy
 
 class Organism(Agent):
     def __init__(
@@ -16,9 +16,12 @@ class Organism(Agent):
         position: Coordinate,
         direction: Direction,
         lifespan: int,
+        use_brain
     ):
         super().__init__(position)
         self.direction = direction
+        self.last_direction = copy.deepcopy(direction)
+        self.last_position = copy.deepcopy(position)
         self.memory = []
         self.age = 0
         self.original_lifespan = lifespan
@@ -27,7 +30,7 @@ class Organism(Agent):
         self.chance_to_wait = random.random()
         self.chance_to_move = random.random()
         self.brain = self.build_brain()
-        self.use_brain = True
+        self.use_brain = use_brain
         self.current_weights = [self.chance_to_move, self.chance_to_turn, self.chance_to_wait]
 
     def build_brain(self):
@@ -62,6 +65,21 @@ class Organism(Agent):
         new_position = self.position.add(self.direction)
         return board[new_position.y, new_position.x]
 
+    def get_things_ahead(self, board):
+        items_at_positions = []
+        new_position = self.position.add(self.direction)
+
+        row_ids = [self.position.y + i for i in range(-1, 2)]
+        column_ids = [self.position.x + i for i in range(-1, 2)]
+
+        clipped_row_ids = np.clip(row_ids, 0, board.shape[0] - 1)
+        clipped_column_ids = np.clip(column_ids, 0, board.shape[1] - 1)
+
+        idx = np.ix_(clipped_row_ids, clipped_column_ids)
+
+        selected_elements = board[idx]
+        return selected_elements.flatten()
+
     def move(self, board):
         thing_ahead = self.get_thing_ahead(board)
         if type(thing_ahead) == Wall or type(thing_ahead) == Organism and thing_ahead.is_alive:
@@ -73,19 +91,21 @@ class Organism(Agent):
         self.is_alive = False
 
     def get_brain_inputs(self, board):
-        input_value = 0
-        thing_ahead = self.get_thing_ahead(board)
-        if type(thing_ahead) == Wall or type(thing_ahead) == Organism and thing_ahead.is_alive:
-            input_value = -0.5
-        elif type(thing_ahead) == Food and thing_ahead.is_alive:
-            input_value = 0.5
-        return [input_value]
+        input_values = []
+        # things_ahead = self.get_things_ahead(board)
+        things_ahead = [self.get_thing_ahead(board)]
+        for thing_ahead in things_ahead:
+            input_value = 0
+            if type(thing_ahead) == Wall or type(thing_ahead) == Organism and thing_ahead.is_alive:
+                input_value = -0.5
+            elif type(thing_ahead) == Food and thing_ahead.is_alive:
+                input_value = 0.5
+            input_values.append(input_value)
+        return input_values
 
-    def update(self, board):
+    def decide(self, board):
         if not self.is_alive:
             return
-        self.memory.append({'pos': self.position, 'dir': self.direction, 'is_alive': self.is_alive})
-
         choices = [Action.MOVE, Action.TURN, Action.WAIT]
         weights = [self.chance_to_move,
                    self.chance_to_turn, self.chance_to_wait]
@@ -95,7 +115,19 @@ class Organism(Agent):
             # print(weights)
         self.current_weights = weights
         choices = random.choices(choices, weights=weights, k=1)
-        choice = choices[0]
+        decision = choices[0]
+        return decision
+
+    def update(self, board):
+        if not self.is_alive:
+            return
+        self.last_position.x = self.position.x
+        self.last_position.y = self.position.y
+        self.last_direction.x = self.direction.x
+        self.last_direction.y = self.direction.y
+
+        self.memory.append({'pos': self.position, 'dir': self.direction, 'is_alive': self.is_alive})
+        choice = self.decide(board)
         if choice == Action.TURN:
             self.turn()
         elif choice == Action.MOVE:
@@ -120,8 +152,8 @@ class Organism(Agent):
         if not self.is_alive:
             fill = "gray"
         buffer = int(input_to_img_ratio / 4)
-        x = self.position.x * input_to_img_ratio
-        y = self.position.y * input_to_img_ratio
+        x = self.last_position.x * input_to_img_ratio
+        y = self.last_position.y * input_to_img_ratio
         x2 = x + input_to_img_ratio - 1
         y2 = y + input_to_img_ratio - 1
         x_middle = mean([x, x2])
@@ -134,16 +166,16 @@ class Organism(Agent):
         # TODO - fix this terribly convoluted drawing logic
         d.rectangle(
             [
-                x_middle + (buffer if self.direction.x == 0 else 0),
-                y_middle + (buffer if self.direction.y == 0 else 0),
+                x_middle + (buffer if self.last_direction.x == 0 else 0),
+                y_middle + (buffer if self.last_direction.y == 0 else 0),
                 (
-                    x if self.direction.x == -1
-                    else x2 if self.direction.x == 1
-                    else x_middle - (buffer if self.direction.x == 0 else 0)),
+                    x if self.last_direction.x == -1
+                    else x2 if self.last_direction.x == 1
+                    else x_middle - (buffer if self.last_direction.x == 0 else 0)),
                 (
-                    y if self.direction.y == -1
-                    else y2 if self.direction.y == 1
-                    else y_middle - (buffer if self.direction.y == 0 else 0))
+                    y if self.last_direction.y == -1
+                    else y2 if self.last_direction.y == 1
+                    else y_middle - (buffer if self.last_direction.y == 0 else 0))
             ],
             fill="black",
             outline=None,
