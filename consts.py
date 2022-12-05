@@ -6,6 +6,11 @@ logs_file_location = 'logs/output_logs.txt'
 organism_logs_file_location = 'logs/output_logs_organisms.txt'
 LAST_GENERATION_KEY = 'last'
 
+neuron_weight_upper_bound = 10
+neuron_weight_lower_bound = -10
+neuron_bias_upper_bound = 10
+neuron_bias_lower_bound = -10
+
 def get_argument_int(argument_string: str, default_value: int):
     value = int(next((x.split("=")[1] for x in sys.argv if "{}=".format(argument_string) in x), default_value))
     return value
@@ -36,9 +41,12 @@ generations_to_render = get_argument_list('rg', LAST_GENERATION_KEY)
 # options
 debug = get_option('db')
 use_brain = get_option('ub')
+should_log = get_option('l')
 
 
 class Action(Enum):
     MOVE = 1
     TURN = 2
     WAIT = 3
+
+action_choices = [Action.MOVE, Action.TURN, Action.WAIT]

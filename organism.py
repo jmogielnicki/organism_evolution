@@ -3,7 +3,14 @@ from helpers import Coordinate, Direction
 from statistics import mean
 from agent import Agent
 from wall import Wall
-from consts import Action, debug
+from consts import (
+    Action,
+    debug,
+    neuron_bias_lower_bound,
+    neuron_bias_upper_bound,
+    neuron_weight_lower_bound,
+    neuron_weight_upper_bound,
+    action_choices)
 import random
 from PIL import ImageFont
 from neural_network import NeuralNetwork, Neuron
@@ -26,6 +33,7 @@ class Organism(Agent):
         self.age = 0
         self.original_lifespan = lifespan
         self.lifespan = lifespan
+        self.fitness = 1
         self.chance_to_turn = random.random()
         self.chance_to_wait = random.random()
         self.chance_to_move = random.random()
@@ -47,8 +55,10 @@ class Organism(Agent):
         # Create the output layer neurons with output layer weights and biases with value between -0.5 to 0.5
         output_layer = [
             Neuron(
-                [random.uniform(-100, 100) for _ in range(num_inputs)],
-                random.uniform(-100, 100)) for _ in range(num_outputs)]
+                [random.uniform(neuron_weight_lower_bound, neuron_weight_upper_bound) for _ in range(num_inputs)],
+                random.uniform(neuron_bias_lower_bound, neuron_bias_upper_bound)
+            ) for _ in range(num_outputs)
+        ]
 
         # Create the NeuralNetwork object
         return NeuralNetwork(hidden_layers, output_layer)
@@ -66,9 +76,6 @@ class Organism(Agent):
         return board[new_position.y, new_position.x]
 
     def get_things_ahead(self, board):
-        items_at_positions = []
-        new_position = self.position.add(self.direction)
-
         row_ids = [self.position.y + i for i in range(-1, 2)]
         column_ids = [self.position.x + i for i in range(-1, 2)]
 
@@ -106,15 +113,14 @@ class Organism(Agent):
     def decide(self, board):
         if not self.is_alive:
             return
-        choices = [Action.MOVE, Action.TURN, Action.WAIT]
         weights = [self.chance_to_move,
                    self.chance_to_turn, self.chance_to_wait]
         if self.use_brain:
             weights = self.brain.forward_propagate(inputs=self.get_brain_inputs(
                 board))
-            # print(weights)
         self.current_weights = weights
-        choices = random.choices(choices, weights=weights, k=1)
+        # print(weights)
+        choices = random.choices(action_choices, weights=weights, k=1)
         decision = choices[0]
         return decision
 
@@ -135,8 +141,8 @@ class Organism(Agent):
         elif choice == Action.WAIT:
             self.wait()
 
-        if self.age > self.lifespan:
-            self.die()
+        # if self.age > self.lifespan:
+        #     self.die()
         self.age += 1
 
     def get_fitness(self):
@@ -144,11 +150,13 @@ class Organism(Agent):
 
     def eat(self, food: Food):
         self.lifespan += food.health_value
+        self.fitness += food.health_value
         food.get_eaten()
 
     def draw(self, d, input_to_img_ratio):
         fill = "white"
         fill = "rgb({})".format(", ".join([str(int(x * 250)) for x in self.current_weights]))
+        # print(self.current_weights, fill)
         if not self.is_alive:
             fill = "gray"
         buffer = int(input_to_img_ratio / 4)

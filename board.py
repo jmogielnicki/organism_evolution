@@ -1,11 +1,20 @@
 import random
+from statistics import mean
 import numpy as np
+import pandas as pd
 import json
 from helpers import Coordinate, Direction, get_random_direction
 from organism import Organism
 from food import Food
 from wall import Wall
-from consts import logs_file_location, Action, organism_logs_file_location, use_brain
+from consts import (
+    logs_file_location,
+    Action,
+    organism_logs_file_location,
+    use_brain,
+    should_log,
+    action_choices
+)
 
 class Board:
     def __init__(
@@ -108,28 +117,43 @@ class Board:
             sort_keys=True)
 
     def log_stats(self):
-        surviving_members = [x for x in self.players if x.is_alive is True]
-        num_surviving = len(surviving_members)
-        avg_prob_turn = sum(member.chance_to_turn for member in surviving_members) / len(surviving_members)
-        avg_prob_move = sum(member.chance_to_move for member in surviving_members) / len(surviving_members)
-        avg_prob_wait = sum(member.chance_to_wait for member in surviving_members) / len(surviving_members)
+        eaters = [x for x in self.players if x.fitness > 1]
+        num_eaters = len(eaters)
+        avg_prob_turn = sum(member.chance_to_turn for member in eaters) / len(eaters)
+        avg_prob_move = sum(member.chance_to_move for member in eaters) / len(eaters)
+        avg_prob_wait = sum(member.chance_to_wait for member in eaters) / len(eaters)
+        average_fitness = mean([x.fitness for x in self.players])
+        columns = ['weight_' + str(x) for x in action_choices] + \
+            ['bias_' + str(x) for x in action_choices] + ['fitness']
+        stats = []
+        for player in self.players:
+            # TODO - weights[0] will only get the first weight for each output neuron.
+            # Once we have multiple inputs this will break
+            weights = [neuron.weights[0] for neuron in player.brain.output_layer]
+            biases = [neuron.bias for neuron in player.brain.output_layer]
+            fitness = player.fitness
+            stats.append([weights[0], weights[1], weights[2],biases[0], biases[1], biases[2], fitness])
+        df = pd.DataFrame(stats, columns=columns)
+        if should_log:
+            print(df.describe(percentiles=[.5], include='all').transpose())
         log_string = ' '.join(
             ['tmw: ', str(round(avg_prob_turn, 2)), str(round(avg_prob_move, 2)), str(round(avg_prob_wait, 2)),
-                ' num_surv: ', str(num_surviving)])
+             ' avg fitness: ', str(average_fitness), ' num_surv: ', str(num_eaters)])
         print(log_string)
-        f = open(logs_file_location, "a")
-        f.write("\n{}".format(log_string))
-        f.close()
-        stuff_to_log = {
-            'gen': self.generation_number,
-            'players': self.players,
-            'food': self.food,
-            'walls': self.walls
-        }
-        self.log_data.append(stuff_to_log)
-        f2 = open(organism_logs_file_location, "a")
-        f2.write("\n{}".format(self.toJSON(stuff_to_log)))
-        f2.close()
+        if should_log:
+            f = open(logs_file_location, "a")
+            f.write("\n{}".format(log_string))
+            f.close()
+            stuff_to_log = {
+                'gen': self.generation_number,
+                'players': self.players,
+                'food': self.food,
+                'walls': self.walls
+            }
+            self.log_data.append(stuff_to_log)
+            f2 = open(organism_logs_file_location, "a")
+            f2.write("\n{}".format(self.toJSON(stuff_to_log)))
+            f2.close()
 
     def start_next_generation(self):
         self.log_stats()
@@ -145,15 +169,12 @@ class Board:
         self.generation_number += 1
 
     def breed(self):
-        # TODO: change this so that fitness determines your chances of breeding instead of survival
         use_brain = self.players[0].use_brain
-        surviving_members = [x for x in self.players if x.is_alive is True]
-        self.players = []
-        random.shuffle(surviving_members)
+        new_players = []
+        player_fitnesses = [x.fitness for x in self.players]
 
         for i in range(self.num_players):
-            parent_a = random.choice(surviving_members)
-            parent_b = random.choice(surviving_members)
+            parent_a, parent_b = random.choices(self.players, player_fitnesses, k=2)
             direction_x, direction_y = get_random_direction()
             child = Organism(
                 self.get_random_open_position(),
@@ -164,14 +185,15 @@ class Board:
 
             if use_brain:
                 # create the new hybrid output layer with weights and biases
-                number_neurons = len(child.brain.output_layer)
-                for i in range(number_neurons):
+                for i in range(len(child.brain.output_layer)):
+                    child.brain.output_layer[i] = random.choice([
+                        parent_a.brain.output_layer[i],
+                        parent_b.brain.output_layer[i]])
+                    for weight_id in range(len(child.brain.output_layer[i].weights)):
+                        if self.mutation_rate > random.uniform(0, 1.0):
+                            child.brain.output_layer[i].weights[weight_id] *= random.uniform(0.5, 1.5)
                     if self.mutation_rate > random.uniform(0, 1.0):
-                        continue
-                    else:
-                        child.brain.output_layer[i] = random.choice([
-                            parent_a.brain.output_layer[i],
-                            parent_b.brain.output_layer[i]])
+                        child.brain.output_layer[i].bias *= random.uniform(0.5, 1.5)
             else:
                 child.chance_to_turn = random.choice([parent_a.chance_to_turn, parent_b.chance_to_turn])
                 child.chance_to_move = random.choice([parent_a.chance_to_move, parent_b.chance_to_move])
@@ -183,5 +205,6 @@ class Board:
                     child.chance_to_move = min(child.chance_to_move + 0.5, 1) if chosen_action == Action.MOVE else 0
                     child.chance_to_wait = min(child.chance_to_wait + 0.5, 1) if chosen_action == Action.WAIT else 0
 
-            self.players.append(child)
+            new_players.append(child)
             self.board[child.position.y, child.position.x] = child
+        self.players = new_players
