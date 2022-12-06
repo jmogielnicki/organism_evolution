@@ -174,7 +174,6 @@ class Board:
         player_fitnesses = [x.fitness for x in self.players]
 
         for i in range(self.num_players):
-            parent_a, parent_b = random.choices(self.players, player_fitnesses, k=2)
             direction_x, direction_y = get_random_direction()
             child = Organism(
                 self.get_random_open_position(),
@@ -183,17 +182,31 @@ class Board:
                 use_brain=use_brain
             )
 
+            parent_a, parent_b = random.choices(self.players, player_fitnesses, k=2)
+            # print(parent_a.fitness, parent_b.fitness)
+
             if use_brain:
                 # create the new hybrid output layer with weights and biases
                 for i in range(len(child.brain.output_layer)):
                     child.brain.output_layer[i] = random.choice([
                         parent_a.brain.output_layer[i],
                         parent_b.brain.output_layer[i]])
-                    for weight_id in range(len(child.brain.output_layer[i].weights)):
+                    # child.brain.output_layer[i] = random.choice([
+                    #     parent_a.brain.output_layer[i],
+                    #     parent_b.brain.output_layer[i]])
+                    for weight_idx in range(len(child.brain.output_layer[i].weights)):
                         if self.mutation_rate > random.uniform(0, 1.0):
-                            child.brain.output_layer[i].weights[weight_id] *= random.uniform(0.5, 1.5)
+                            child.brain.output_layer[i].weights[weight_idx] *= random.uniform(0.5, 1.5)
+                        else:
+                            child.brain.output_layer[i].weights[weight_idx] = random.choice([
+                                parent_a.brain.output_layer[i].weights[weight_idx],
+                                parent_b.brain.output_layer[i].weights[weight_idx]])
                     if self.mutation_rate > random.uniform(0, 1.0):
                         child.brain.output_layer[i].bias *= random.uniform(0.5, 1.5)
+                    else:
+                        child.brain.output_layer[i].bias = random.choice([
+                            parent_a.brain.output_layer[i].bias,
+                            parent_b.brain.output_layer[i].bias])
             else:
                 child.chance_to_turn = random.choice([parent_a.chance_to_turn, parent_b.chance_to_turn])
                 child.chance_to_move = random.choice([parent_a.chance_to_move, parent_b.chance_to_move])

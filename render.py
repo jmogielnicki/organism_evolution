@@ -86,6 +86,6 @@ with open(organism_logs_file_location, "a") as file:
     file.close()
 
 print(board.players[0].brain.output_layer)
-# board.players[0].brain.visualize()
+board.players[0].brain.visualize()
 # with open(organism_logs_file_location) as file:
 #     import pdb; pdb.set_trace()
