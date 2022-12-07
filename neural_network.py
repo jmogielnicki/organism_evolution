@@ -1,7 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 from statistics import mean
-from helpers import get_random_neuron_weights, get_random_neuron_bias
+from helpers import get_random_neuron_weights, get_random_neuron_bias, normalize
 import consts
 
 class Neuron:
@@ -121,6 +123,8 @@ class NeuralNetwork:
         combined_layers = self.hidden_layers + [self.output_layer]
         # print(len(combined_layers))
         fig, ax = plt.subplots()
+        fig.set_size_inches(12, 8)
+        cmap = mpl.colormaps['bwr_r']
 
         # work backwards through the shape of the network
         for layer_idx in range(len(self.shape) - 1, 0, -1):
@@ -131,46 +135,23 @@ class NeuralNetwork:
             label = 'o' if layer_idx == len(
                 self.shape) - 1 else 'h'
             for i, neuron in enumerate(layer):
-                ax.scatter(layer_idx, i, s=100, c='red' if neuron.bias < 0 else 'blue')
-                ax.text(layer_idx, i, '{}_{}_b={}'.format(label, i, round(neuron.bias, 2)))
+                ax.scatter(
+                    layer_idx,
+                    i,
+                    s=200,
+                    c=cmap(normalize(neuron.bias, consts.neuron_bias_lower_bound, consts.neuron_bias_upper_bound)),
+                    edgecolors='red' if neuron.bias < 0 else 'blue',
+                )
+                ax.text(layer_idx, i, '{}'.format(round(neuron.bias, 1)))
                 for j, weight in enumerate(neuron.weights):
-                    ax.plot([layer_idx, layer_idx - 1], [i, j],
-                            color='red' if weight < 0 else 'blue', alpha=abs(weight) / consts.neuron_weight_upper_bound)
-                    ax.text(x=mean([layer_idx, layer_idx - 1]),
-                            y=mean([i, j]), s=round(weight, 2))
-
-        # # work backwards from the output layer to the first hidden layer (do not include input layer)
-        # for layer_idx in range(len(combined_layers) - 1, -1, -1):
-        #     print('layer idx: ', layer_idx)
-        #     print('next layer idx: ', layer_idx - 1)
-        #     layer = combined_layers[layer_idx]
-        #     label = 'output' if layer_idx == len(combined_layers) - 1 else 'hidden'
-        #     for i, neuron in enumerate(layer):
-        #         ax.scatter(layer_idx + 1, i)
-        #         ax.text(layer_idx + 1, i, '{}_{}'.format(label, i))
-        #         for j, weight in enumerate(neuron.weights):
-        #             ax.plot([layer_idx + 1, layer_idx], [i, j], color='red' if weight < 0 else 'blue')
-        #             ax.text(x=mean([layer_idx + 1, layer_idx]),
-        #                     y=mean([i, j]), s=round(weight, 2))
-        #         if next_layer:
-        #             for j, neuron in enumerate(next_layer):
-        #                 ax.plot([layer_idx + 1, layer_idx], [i, j])
-
-        # # plot output layer nodes
-        # for i, neuron in enumerate(self.output_layer):
-        #     ax.scatter(num_layers - 1, i)
-        #     ax.text(num_layers - 1, i, 'output_' + str(i))
-
-        # plot the input layer nodes
-        # for i in range(self.num_inputs):
-        #     ax.scatter(0, i)
-        #     ax.text(0, i, 'input_' + str(i))
-
-        # # plot the hidden layers
-        # for i in range(len(self.hidden_layers)):
-        #     for j, neuron in enumerate(self.hidden_layers[i]):
-        #         ax.scatter(1 + i, j)
-        #         ax.text(1 + i, j, 'hidden_{}_{}'.format(str(i), str(j)))
+                    ax.plot(
+                        [layer_idx, layer_idx - 1],
+                        [i, j],
+                        c=cmap(normalize(weight, consts.neuron_weight_lower_bound, consts.neuron_weight_upper_bound)),
+                    )
+                    ax.text(x=mean([layer_idx, layer_idx, layer_idx, layer_idx, layer_idx - 1]),
+                            y=mean([i, i, i, i, j]),
+                            s=round(weight, 1))
 
         plt.show(block=False)
         plt.pause(1)

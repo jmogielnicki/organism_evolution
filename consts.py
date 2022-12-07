@@ -6,10 +6,10 @@ logs_file_location = 'logs/output_logs.txt'
 organism_logs_file_location = 'logs/output_logs_organisms.txt'
 LAST_GENERATION_KEY = 'last'
 
-neuron_weight_upper_bound = 10
-neuron_weight_lower_bound = -10
-neuron_bias_upper_bound = 10
-neuron_bias_lower_bound = -10
+neuron_weight_upper_bound = 1
+neuron_weight_lower_bound = -1
+neuron_bias_upper_bound = 1
+neuron_bias_lower_bound = -1
 
 def get_argument_int(argument_string: str, default_value: int):
     value = int(next((x.split("=")[1] for x in sys.argv if "{}=".format(argument_string) in x), default_value))

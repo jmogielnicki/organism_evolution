@@ -56,3 +56,11 @@ def get_random_neuron_bias():
         consts.neuron_bias_lower_bound,
         consts.neuron_bias_upper_bound
     )
+
+def normalize(value, min, max):
+    # Figure out how 'wide' each range is
+    span = max - min
+
+    # Convert the left range into a 0-1 range (float)
+    valueScaled = float(value - min) / float(span)
+    return valueScaled
