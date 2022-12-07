@@ -5,6 +5,7 @@ from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 from statistics import mean
 from helpers import get_random_neuron_weights, get_random_neuron_bias, normalize
 import consts
+import pprint
 
 class Neuron:
     def __init__(self, weights, bias):
@@ -68,9 +69,13 @@ class NeuralNetwork:
         return outputs
 
     def print(self):
-        print('inputs: ', self.num_inputs)
-        print('hidden_layers: ', [[neuron.__dict__ for neuron in layer] for layer in self.hidden_layers])
-        print('output_layer: ', [neuron.__dict__ for neuron in self.output_layer])
+        pp = pprint.PrettyPrinter(indent=4)
+        d = [
+            {'inputs: ': self.num_inputs},
+            {'hidden_layers: ': [[neuron.__dict__ for neuron in layer] for layer in self.hidden_layers]},
+            {'output_layer: ': [neuron.__dict__ for neuron in self.output_layer]}
+        ]
+        pp.pprint(d)
 
     def visualize(self):
         # Compute the total number of layers in the network, including the input but excluding the output
@@ -129,28 +134,35 @@ class NeuralNetwork:
         # work backwards through the shape of the network
         for layer_idx in range(len(self.shape) - 1, 0, -1):
             num_neurons = self.shape[layer_idx]
-            print(layer_idx)
-            print(combined_layers)
             layer = combined_layers[layer_idx - 1]  # the combined layers list doesn't include input layer
-            label = 'o' if layer_idx == len(
-                self.shape) - 1 else 'h'
             for i, neuron in enumerate(layer):
+                x = layer_idx
+                y = normalize(i, 0, self.shape[layer_idx])
                 ax.scatter(
-                    layer_idx,
-                    i,
+                    x,
+                    y,
                     s=200,
                     c=cmap(normalize(neuron.bias, consts.neuron_bias_lower_bound, consts.neuron_bias_upper_bound)),
                     edgecolors='red' if neuron.bias < 0 else 'blue',
                 )
-                ax.text(layer_idx, i, '{}'.format(round(neuron.bias, 1)))
+                ax.text(
+                    x - 0.01,
+                    normalize(i, 0, self.shape[layer_idx]) + 0.03,
+                    '{}'.format(round(neuron.bias, 1))
+                )
                 for j, weight in enumerate(neuron.weights):
+                    x = layer_idx
+                    x2 = layer_idx - 1
+                    y = normalize(i, 0, num_neurons)
+                    y2 = normalize(j, 0, self.shape[layer_idx - 1])
                     ax.plot(
-                        [layer_idx, layer_idx - 1],
-                        [i, j],
+                        [x, x2],
+                        [y, y2],
                         c=cmap(normalize(weight, consts.neuron_weight_lower_bound, consts.neuron_weight_upper_bound)),
                     )
-                    ax.text(x=mean([layer_idx, layer_idx, layer_idx, layer_idx, layer_idx - 1]),
-                            y=mean([i, i, i, i, j]),
+                    # we shift the text over to be closer to the neuron that contains the weights
+                    ax.text(x=mean([x, x, x, x, x2]),
+                            y=mean([y, y, y, y, y2]),
                             s=round(weight, 1))
 
         plt.show(block=False)

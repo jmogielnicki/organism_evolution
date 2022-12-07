@@ -42,26 +42,13 @@ class Organism(Agent):
         self.current_weights = [self.chance_to_move, self.chance_to_turn, self.chance_to_wait]
 
     def build_brain(self):
-        # Set the number of input, hidden, and output nodes
+        # Set the number of inputs, hidden layer shape, and output nodes
         num_inputs = 1
-        num_hidden = 3
+        hidden_layer_shape = []
         num_outputs = 3
+        shape = [num_inputs] + hidden_layer_shape + [num_outputs]
 
-        # Create the hidden layer neurons
-        hidden_layers = [
-            # [Neuron([0, 0], 0) for _ in range(num_hidden)]
-        ]
-
-        # Create the output layer neurons with output layer weights and biases with value between -0.5 to 0.5
-        output_layer = [
-            Neuron(
-                [random.uniform(neuron_weight_lower_bound, neuron_weight_upper_bound) for _ in range(num_inputs)],
-                random.uniform(neuron_bias_lower_bound, neuron_bias_upper_bound)
-            ) for _ in range(num_outputs)
-        ]
-
-        # Create the NeuralNetwork object
-        return NeuralNetwork(hidden_layers, output_layer)
+        return NeuralNetwork(shape)
 
     def wait(self):
         return
