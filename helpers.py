@@ -3,6 +3,7 @@ import glob
 import shutil
 import os
 import consts
+import numpy as np
 
 class Direction:
     def __init__(self, x: int, y: int):
@@ -43,3 +44,15 @@ def get_items_in_directory(file_path):
 def debug_print(string):
     if consts.debug:
         print(string)
+
+def get_random_neuron_weights(num_weights):
+    return [np.random.uniform(
+        consts.neuron_weight_lower_bound,
+        consts.neuron_weight_upper_bound
+    ) for _ in range(num_weights)]
+
+def get_random_neuron_bias():
+    return np.random.uniform(
+        consts.neuron_bias_lower_bound,
+        consts.neuron_bias_upper_bound
+    )

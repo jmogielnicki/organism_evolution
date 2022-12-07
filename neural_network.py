@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+from statistics import mean
+from helpers import get_random_neuron_weights, get_random_neuron_bias
+import consts
 
 class Neuron:
     def __init__(self, weights, bias):
@@ -20,7 +22,6 @@ class Neuron:
 
 class NeuralNetwork:
     def __init__(self, shape=[1, 4, 3]):
-        print('__construct')
         self.shape = shape
         num_layers = len(shape)
         self.num_inputs = shape[0]
@@ -30,19 +31,20 @@ class NeuralNetwork:
         # Initialize the hidden layers and output layer of the network
         self.hidden_layers = []
         self.output_layer = []
+
+        # iterate from the first hidden layer to the output layer (skip the input layer)
+        # define the necessary neurons with the correct number of weights for the previous layer and a bias
         for layer_idx, num_neurons in enumerate(shape[1:], 1):
-            print(layer_idx)
-            last_layer_num_neurons = shape[layer_idx - 1]
+            prev_layer_num_neurons = shape[layer_idx - 1]
             layer = []
             for _ in range(num_neurons):
                 # Create a new neuron with random weights and bias
-                weights = np.random.rand(last_layer_num_neurons)
-                bias = np.random.rand()
+                weights = get_random_neuron_weights(prev_layer_num_neurons)
+                bias = get_random_neuron_bias()
                 neuron = Neuron(weights, bias)
                 layer.append(neuron)
+            # append the layer to either hidden or output layer
             if layer_idx == num_layers - 1:
-                print('appending to output_layer')
-                print(len(layer))
                 self.output_layer = layer
             else:
                 self.hidden_layers.append(layer)
@@ -115,30 +117,44 @@ class NeuralNetwork:
         num_hidden_layers = len(self.hidden_layers)
         num_layers = num_hidden_layers + 2
 
+        # the [0] represents the input layer, which does not have true neurons
         combined_layers = self.hidden_layers + [self.output_layer]
         # print(len(combined_layers))
         fig, ax = plt.subplots()
 
         # work backwards through the shape of the network
-        for i in range(len(self.shape) - 1, -1, -1):
-            num_neurons = self.shape[i]
-            print(i, ' ', num_neurons)
-            layer = 
-
-        # work backwards from the output layer to the first hidden layer (do not include input layer)
-        for layer_idx in range(len(combined_layers) - 1, -1, -1):
-            print('layer idx: ', layer_idx)
-            print('next layer idx: ', layer_idx - 1)
-            layer = combined_layers[layer_idx]
-            next_layer = combined_layers[layer_idx - 1]
-            # print(next_layer)
-            label = 'output' if layer_idx == len(combined_layers) - 1 else 'hidden'
+        for layer_idx in range(len(self.shape) - 1, 0, -1):
+            num_neurons = self.shape[layer_idx]
+            print(layer_idx)
+            print(combined_layers)
+            layer = combined_layers[layer_idx - 1]  # the combined layers list doesn't include input layer
+            label = 'o' if layer_idx == len(
+                self.shape) - 1 else 'h'
             for i, neuron in enumerate(layer):
-                ax.scatter(layer_idx + 1, i)
-                ax.text(layer_idx + 1, i, '{}_{}'.format(label, i))
-                if next_layer:
-                    for j, neuron in enumerate(next_layer):
-                        ax.plot([layer_idx + 1, layer_idx], [i, j])
+                ax.scatter(layer_idx, i, s=100, c='red' if neuron.bias < 0 else 'blue')
+                ax.text(layer_idx, i, '{}_{}_b={}'.format(label, i, round(neuron.bias, 2)))
+                for j, weight in enumerate(neuron.weights):
+                    ax.plot([layer_idx, layer_idx - 1], [i, j],
+                            color='red' if weight < 0 else 'blue', alpha=abs(weight) / consts.neuron_weight_upper_bound)
+                    ax.text(x=mean([layer_idx, layer_idx - 1]),
+                            y=mean([i, j]), s=round(weight, 2))
+
+        # # work backwards from the output layer to the first hidden layer (do not include input layer)
+        # for layer_idx in range(len(combined_layers) - 1, -1, -1):
+        #     print('layer idx: ', layer_idx)
+        #     print('next layer idx: ', layer_idx - 1)
+        #     layer = combined_layers[layer_idx]
+        #     label = 'output' if layer_idx == len(combined_layers) - 1 else 'hidden'
+        #     for i, neuron in enumerate(layer):
+        #         ax.scatter(layer_idx + 1, i)
+        #         ax.text(layer_idx + 1, i, '{}_{}'.format(label, i))
+        #         for j, weight in enumerate(neuron.weights):
+        #             ax.plot([layer_idx + 1, layer_idx], [i, j], color='red' if weight < 0 else 'blue')
+        #             ax.text(x=mean([layer_idx + 1, layer_idx]),
+        #                     y=mean([i, j]), s=round(weight, 2))
+        #         if next_layer:
+        #             for j, neuron in enumerate(next_layer):
+        #                 ax.plot([layer_idx + 1, layer_idx], [i, j])
 
         # # plot output layer nodes
         # for i, neuron in enumerate(self.output_layer):
@@ -146,9 +162,9 @@ class NeuralNetwork:
         #     ax.text(num_layers - 1, i, 'output_' + str(i))
 
         # plot the input layer nodes
-        for i in range(self.num_inputs):
-            ax.scatter(0, i)
-            ax.text(0, i, 'input_' + str(i))
+        # for i in range(self.num_inputs):
+        #     ax.scatter(0, i)
+        #     ax.text(0, i, 'input_' + str(i))
 
         # # plot the hidden layers
         # for i in range(len(self.hidden_layers)):
@@ -156,5 +172,7 @@ class NeuralNetwork:
         #         ax.scatter(1 + i, j)
         #         ax.text(1 + i, j, 'hidden_{}_{}'.format(str(i), str(j)))
 
-
-        plt.show()
+        plt.show(block=False)
+        plt.pause(1)
+        input()
+        plt.close()
