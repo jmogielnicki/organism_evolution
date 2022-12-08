@@ -19,6 +19,7 @@ from consts import (
     neuron_bias_lower_bound,
     neuron_bias_upper_bound
 )
+import copy
 
 class Board:
     def __init__(
@@ -187,7 +188,9 @@ class Board:
             )
 
             parent_a, parent_b = random.choices(self.players, player_fitnesses, k=2)
-            # print(parent_a.fitness, parent_b.fitness)
+            parent_a = copy.deepcopy(parent_a)
+            parent_b = copy.deepcopy(parent_b)
+            print(parent_a.fitness, parent_b.fitness)
 
             if use_brain:
                 # create the new hybrid output layer with weights and biases

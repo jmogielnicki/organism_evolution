@@ -77,8 +77,7 @@ class NeuralNetwork:
         ]
         pp.pprint(d)
 
-    def visualize(self):
-        print('__visualize')
+    def visualize(self, should_save=True, should_show=True):
         # layers are equal to hidden layers plus input and output layers
         num_hidden_layers = len(self.hidden_layers)
         num_layers = num_hidden_layers + 2
@@ -100,7 +99,7 @@ class NeuralNetwork:
                 ax.scatter(
                     x,
                     y,
-                    s=200,
+                    s=400,
                     c=cmap(normalize(neuron.bias, consts.neuron_bias_lower_bound, consts.neuron_bias_upper_bound)),
                     edgecolors='red' if neuron.bias < 0 else 'blue',
                 )
@@ -117,14 +116,21 @@ class NeuralNetwork:
                     ax.plot(
                         [x, x2],
                         [y, y2],
-                        c=cmap(normalize(weight, consts.neuron_weight_lower_bound, consts.neuron_weight_upper_bound)),
+                        c=cmap(normalize(
+                            weight, consts.neuron_weight_lower_bound, consts.neuron_weight_upper_bound)),
                     )
                     # we shift the text over to be closer to the neuron that contains the weights
                     ax.text(x=mean([x, x, x, x, x2]),
                             y=mean([y, y, y, y, y2]),
                             s=round(weight, 1))
 
-        plt.show(block=False)
-        plt.pause(1)
-        input()
-        plt.close()
+
+        plt.grid(False)
+        plt.axis('off')
+        if should_save:
+            plt.savefig('media/diagrams/diagram.png', bbox_inches='tight')
+        if should_show:
+            plt.show(block=False)
+            plt.pause(1)
+            input()
+            plt.close()

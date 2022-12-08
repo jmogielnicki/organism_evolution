@@ -43,7 +43,7 @@ class Organism(Agent):
 
     def build_brain(self):
         # Set the number of inputs, hidden layer shape, and output nodes
-        num_inputs = 1
+        num_inputs = 3
         hidden_layer_shape = []
         num_outputs = 3
         shape = [num_inputs] + hidden_layer_shape + [num_outputs]
@@ -85,16 +85,18 @@ class Organism(Agent):
         self.is_alive = False
 
     def get_brain_inputs(self, board):
-        input_values = []
+        input_values = [0, 0, 0]
         # things_ahead = self.get_things_ahead(board)
         things_ahead = [self.get_thing_ahead(board)]
         for thing_ahead in things_ahead:
-            input_value = 0
-            if type(thing_ahead) == Wall or type(thing_ahead) == Organism and thing_ahead.is_alive:
-                input_value = -0.5
+            # input_value = 0
+            if type(thing_ahead) == Wall:
+                input_values[1] = 1
+            elif type(thing_ahead) == Organism and thing_ahead.is_alive:
+                input_values[2] = 1
             elif type(thing_ahead) == Food and thing_ahead.is_alive:
-                input_value = 0.5
-            input_values.append(input_value)
+                input_values[0] = 1
+            # input_values.append(input_value)
         return input_values
 
     def decide(self, board):
