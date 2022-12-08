@@ -3,7 +3,8 @@ from statistics import mean
 import numpy as np
 import pandas as pd
 import json
-from helpers import Coordinate, Direction, get_random_direction
+import os
+from helpers import Coordinate, Direction, get_random_direction, clear_all_folders_in_directory
 from organism import Organism
 from food import Food
 from wall import Wall
@@ -17,7 +18,8 @@ from consts import (
     neuron_weight_lower_bound,
     neuron_weight_upper_bound,
     neuron_bias_lower_bound,
-    neuron_bias_upper_bound
+    neuron_bias_upper_bound,
+    brain_diagrams_dir
 )
 import copy
 
@@ -131,6 +133,13 @@ class Board:
         columns = ['weight_' + str(x) for x in action_choices] + \
             ['bias_' + str(x) for x in action_choices] + ['fitness']
         stats = []
+        for player in sorted(self.players, key=(lambda o: o.fitness), reverse=True)[:10]:
+            plt = player.brain.visualize(should_show=False)
+            image_path = '{}{}/'.format(brain_diagrams_dir, self.generation_number)
+            if not os.path.exists(image_path):
+                os.makedirs(image_path, exist_ok=True)
+            plt.savefig(
+                '{}{}.png'.format(image_path, 'id_' + str(player.id)), bbox_inches='tight')
         for player in self.players:
             # TODO - weights[0] will only get the first weight for each output neuron.
             # Once we have multiple inputs this will break

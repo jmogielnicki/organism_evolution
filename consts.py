@@ -1,10 +1,12 @@
 from enum import Enum
 import sys
+import os
 
 logs_directory = 'logs/'
 logs_file_location = 'logs/output_logs.txt'
 organism_logs_file_location = 'logs/output_logs_organisms.txt'
 LAST_GENERATION_KEY = 'last'
+brain_diagrams_dir = os.getcwdb().decode("utf-8") + '/media/diagrams/brains/'
 
 neuron_weight_upper_bound = 1
 neuron_weight_lower_bound = -1
@@ -49,4 +51,10 @@ class Action(Enum):
     TURN = 2
     WAIT = 3
 
+class Agents(Enum):
+    FOOD = 1
+    WALL = 2
+    ORGANISM = 3
+
 action_choices = [Action.MOVE, Action.TURN, Action.WAIT]
+board_objects = [Agents.FOOD, Agents.WALL, Agents.ORGANISM]

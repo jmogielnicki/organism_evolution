@@ -4,8 +4,10 @@ import matplotlib as mpl
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 from statistics import mean
 from helpers import get_random_neuron_weights, get_random_neuron_bias, normalize
+from consts import brain_diagrams_dir
 import consts
 import pprint
+import os
 
 class Neuron:
     def __init__(self, weights, bias):
@@ -24,7 +26,7 @@ class Neuron:
 
 
 class NeuralNetwork:
-    def __init__(self, shape: list[int], output_labels: list[str], input_labels: list[str]):
+    def __init__(self, shape: list[int], output_labels: list[str], input_labels: list[str], id: int):
         if output_labels and len(output_labels) != shape[len(shape) - 1]:
             raise Exception("There must be as many output labels as there are outputs")
         if input_labels and len(input_labels) != shape[0]:
@@ -39,6 +41,7 @@ class NeuralNetwork:
         self.num_inputs = shape[0]
         self.output_labels = output_labels
         self.input_labels = input_labels
+        self.id = id
 
         # Initialize the hidden layers and output layer of the network
         self.hidden_layers = []
@@ -86,7 +89,7 @@ class NeuralNetwork:
         ]
         pp.pprint(d)
 
-    def visualize(self, should_save=True, should_show=True):
+    def visualize(self, should_show=True):
         # layers are equal to hidden layers plus input and output layers
         num_hidden_layers = len(self.hidden_layers)
         num_layers = num_hidden_layers + 2
@@ -107,11 +110,13 @@ class NeuralNetwork:
                 x = layer_idx
                 y = normalize(i, 0, self.shape[layer_idx])
                 label = self.output_labels[i] + '_' if is_output_layer and self.output_labels else ''
+                bias_val = normalize(neuron.bias, consts.neuron_bias_lower_bound, consts.neuron_bias_upper_bound)
+                print(cmap(bias_val))
                 ax.scatter(
                     x,
                     y,
                     s=400,
-                    c=cmap(normalize(neuron.bias, consts.neuron_bias_lower_bound, consts.neuron_bias_upper_bound)),
+                    c=cmap(bias_val),
                     edgecolors='red' if neuron.bias < 0 else 'blue',
                 )
                 ax.text(
@@ -124,11 +129,12 @@ class NeuralNetwork:
                     x2 = layer_idx - 1
                     y = normalize(i, 0, num_neurons)
                     y2 = normalize(j, 0, self.shape[layer_idx - 1])
+                    weight_val = normalize(weight, consts.neuron_weight_lower_bound, consts.neuron_weight_upper_bound)
                     ax.plot(
                         [x, x2],
                         [y, y2],
-                        c=cmap(normalize(
-                            weight, consts.neuron_weight_lower_bound, consts.neuron_weight_upper_bound)),
+                        c=cmap(weight_val),
+                        linewidth=abs((weight_val - 0.5)) * 5
                     )
                     # we shift the text over to be closer to the neuron that contains the weights
                     ax.text(x=mean([x, x, x, x, x2]),
@@ -141,10 +147,9 @@ class NeuralNetwork:
 
         plt.grid(False)
         plt.axis('off')
-        if should_save:
-            plt.savefig('media/diagrams/diagram.png', bbox_inches='tight')
         if should_show:
             plt.show(block=False)
             plt.pause(1)
             input()
             plt.close()
+        return plt

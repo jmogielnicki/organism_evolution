@@ -1,8 +1,14 @@
 
 
 from agent import Agent
+from consts import Agents
+from helpers import Coordinate
 
 class Wall(Agent):
+    def __init__(self, position: Coordinate):
+        super().__init__(position)
+        self.type = Agents.WALL
+
     def draw(self, d, input_to_img_ratio):
         fill = "rgb(70, 70, 70)"
         x = self.position.x * input_to_img_ratio

@@ -1,5 +1,5 @@
 from board import Board
-from helpers import clear_all_files_in_directory, debug_print
+from helpers import clear_all_files_in_directory, clear_all_folders_in_directory, debug_print
 from image import create_image, open_image, clear_images
 from video import make_videos, open_videos
 from consts import (
@@ -11,6 +11,7 @@ from consts import (
     mutation_rate,
     food_value,
     logs_file_location,
+    brain_diagrams_dir,
     organism_logs_file_location,
     logs_directory,
     generations_to_render,
@@ -30,6 +31,7 @@ def render():
     if not get_option("nc"):
         clear_images()
     clear_all_files_in_directory(logs_directory)
+    clear_all_folders_in_directory(brain_diagrams_dir)
 
 
     ############

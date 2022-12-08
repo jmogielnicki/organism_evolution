@@ -9,3 +9,4 @@ class Agent:
             raise ValueError('Parameter position must be of type Coordinate.')
         self.position = position
         self.is_alive = True
+        self.type = None
