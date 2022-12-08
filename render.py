@@ -87,7 +87,7 @@ def render():
         file.write(board.toJSON(board.log_data))
         file.close()
 
-    print(board.players[0].brain.output_layer)
-    # board.players[0].brain.visualize()
+    board.players[0].brain.print()
+    board.players[0].brain.visualize()
     # with open(organism_logs_file_location) as file:
     #     import pdb; pdb.set_trace()

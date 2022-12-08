@@ -132,9 +132,6 @@ class Organism(Agent):
         #     self.die()
         self.age += 1
 
-    def get_fitness(self):
-        return self.lifespan
-
     def eat(self, food: Food):
         self.lifespan += food.health_value
         self.fitness += food.health_value

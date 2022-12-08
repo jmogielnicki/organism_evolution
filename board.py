@@ -13,7 +13,11 @@ from consts import (
     organism_logs_file_location,
     use_brain,
     should_log,
-    action_choices
+    action_choices,
+    neuron_weight_lower_bound,
+    neuron_weight_upper_bound,
+    neuron_bias_lower_bound,
+    neuron_bias_upper_bound
 )
 
 class Board:
@@ -188,25 +192,32 @@ class Board:
             if use_brain:
                 # create the new hybrid output layer with weights and biases
                 for i in range(len(child.brain.output_layer)):
-                    child.brain.output_layer[i] = random.choice([
-                        parent_a.brain.output_layer[i],
-                        parent_b.brain.output_layer[i]])
-                    # child.brain.output_layer[i] = random.choice([
-                    #     parent_a.brain.output_layer[i],
-                    #     parent_b.brain.output_layer[i]])
-                    for weight_idx in range(len(child.brain.output_layer[i].weights)):
-                        if self.mutation_rate > random.uniform(0, 1.0):
-                            child.brain.output_layer[i].weights[weight_idx] *= random.uniform(0.5, 1.5)
-                        else:
-                            child.brain.output_layer[i].weights[weight_idx] = random.choice([
-                                parent_a.brain.output_layer[i].weights[weight_idx],
-                                parent_b.brain.output_layer[i].weights[weight_idx]])
+
+                    # select a random parent to donate the base neuron
+                    chosen_parent = random.choice([parent_a, parent_b])
+
+                    # apply the neuron of that parent, including bias and weights
+                    child.brain.output_layer[i] = chosen_parent.brain.output_layer[i]
+
+                    # optionally mutate by averaging the value with a random value within the min/max bounds
                     if self.mutation_rate > random.uniform(0, 1.0):
-                        child.brain.output_layer[i].bias *= random.uniform(0.5, 1.5)
-                    else:
-                        child.brain.output_layer[i].bias = random.choice([
-                            parent_a.brain.output_layer[i].bias,
-                            parent_b.brain.output_layer[i].bias])
+                        child.brain.output_layer[i].bias = mean([
+                            child.brain.output_layer[i].bias,
+                            random.uniform(
+                                neuron_bias_lower_bound, neuron_bias_upper_bound)
+                        ])
+
+                    # iterate over weights and select from either parent a or b
+                    for weight_idx in range(len(child.brain.output_layer[i].weights)):
+                        chosen_parent = random.choice([parent_a, parent_b])
+                        child.brain.output_layer[i].weights[weight_idx] = chosen_parent.brain.output_layer[i].weights[weight_idx]
+                        if self.mutation_rate > random.uniform(0, 1.0):
+
+                            # optionally mutate by averaging the value with a random value within the min/max bounds
+                            child.brain.output_layer[i].weights[weight_idx] = mean([
+                                child.brain.output_layer[i].weights[weight_idx],
+                                random.uniform(neuron_weight_lower_bound, neuron_weight_upper_bound)
+                            ])
             else:
                 child.chance_to_turn = random.choice([parent_a.chance_to_turn, parent_b.chance_to_turn])
                 child.chance_to_move = random.choice([parent_a.chance_to_move, parent_b.chance_to_move])
