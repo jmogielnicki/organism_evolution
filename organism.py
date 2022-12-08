@@ -43,12 +43,13 @@ class Organism(Agent):
 
     def build_brain(self):
         # Set the number of inputs, hidden layer shape, and output nodes
-        num_inputs = 3
+        inputs = 3
         hidden_layer_shape = []
-        num_outputs = 3
-        shape = [num_inputs] + hidden_layer_shape + [num_outputs]
+        num_outputs = len(action_choices)
+        output_labels = [str(x).split('.')[1] for x in action_choices]
+        shape = [inputs] + hidden_layer_shape + [num_outputs]
 
-        return NeuralNetwork(shape)
+        return NeuralNetwork(shape, output_labels=output_labels, input_labels=board_objects)
 
     def wait(self):
         return
@@ -90,12 +91,16 @@ class Organism(Agent):
         things_ahead = [self.get_thing_ahead(board)]
         for thing_ahead in things_ahead:
             # input_value = 0
-            if type(thing_ahead) == Wall:
-                input_values[1] = 1
-            elif type(thing_ahead) == Organism and thing_ahead.is_alive:
-                input_values[2] = 1
-            elif type(thing_ahead) == Food and thing_ahead.is_alive:
-                input_values[0] = 1
+            for i, board_object in enumerate(board_objects):
+                if type(thing_ahead) == board_object:
+                    input_values[i] = 1
+            # if type(thing_ahead) == board_objects[0] and thing_ahead.is_alive:
+            #     input_values[0] = 1
+            # elif type(thing_ahead) == Wall:
+            #     input_values[1] = 1
+            # elif type(thing_ahead) == Organism and thing_ahead.is_alive:
+            #     input_values[2] = 1
+
             # input_values.append(input_value)
         return input_values
 

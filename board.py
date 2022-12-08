@@ -190,7 +190,7 @@ class Board:
             parent_a, parent_b = random.choices(self.players, player_fitnesses, k=2)
             parent_a = copy.deepcopy(parent_a)
             parent_b = copy.deepcopy(parent_b)
-            print(parent_a.fitness, parent_b.fitness)
+            # print(parent_a.fitness, parent_b.fitness)
 
             if use_brain:
                 # create the new hybrid output layer with weights and biases

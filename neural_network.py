@@ -24,12 +24,21 @@ class Neuron:
 
 
 class NeuralNetwork:
-    def __init__(self, shape=[1, 4, 3]):
+    def __init__(self, shape: list[int], output_labels: list[str], input_labels: list[str]):
+        if output_labels and len(output_labels) != shape[len(shape) - 1]:
+            raise Exception("There must be as many output labels as there are outputs")
+        if input_labels and len(input_labels) != shape[0]:
+            raise Exception("There must be as many input labels as there are inputs")
+        if len(shape) < 2:
+            raise Exception("There must be at least 2 elements in the shape to represent the input and output layers")
+        if len([x for x in shape if x < 1]) > 0:
+            raise Exception(
+                "Each element in the shape array must be greater than 0, representing the num neurons in that layer")
         self.shape = shape
         num_layers = len(shape)
         self.num_inputs = shape[0]
-        num_outputs = shape[num_layers - 1]
-        hidden_layers_shape = shape[1:num_layers]
+        self.output_labels = output_labels
+        self.input_labels = input_labels
 
         # Initialize the hidden layers and output layer of the network
         self.hidden_layers = []
@@ -91,11 +100,13 @@ class NeuralNetwork:
 
         # work backwards through the shape of the network
         for layer_idx in range(len(self.shape) - 1, 0, -1):
+            is_output_layer = layer_idx == len(self.shape) - 1
             num_neurons = self.shape[layer_idx]
             layer = combined_layers[layer_idx - 1]  # the combined layers list doesn't include input layer
             for i, neuron in enumerate(layer):
                 x = layer_idx
                 y = normalize(i, 0, self.shape[layer_idx])
+                label = self.output_labels[i] + '_' if is_output_layer and self.output_labels else ''
                 ax.scatter(
                     x,
                     y,
@@ -106,7 +117,7 @@ class NeuralNetwork:
                 ax.text(
                     x - 0.01,
                     normalize(i, 0, self.shape[layer_idx]) + 0.03,
-                    '{}'.format(round(neuron.bias, 1))
+                    '{}{}'.format(label, round(neuron.bias, 1))
                 )
                 for j, weight in enumerate(neuron.weights):
                     x = layer_idx
@@ -123,7 +134,10 @@ class NeuralNetwork:
                     ax.text(x=mean([x, x, x, x, x2]),
                             y=mean([y, y, y, y, y2]),
                             s=round(weight, 1))
-
+        for i, input_label in enumerate(self.input_labels):
+            ax.text(x=-0.1,
+                    y=normalize(i, 0, len(self.input_labels)),
+                    s=input_label)
 
         plt.grid(False)
         plt.axis('off')
